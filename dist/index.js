@@ -1,4 +1,5 @@
 const core = require('@actions/core');
+// eslint-disable-next-line no-unused-vars
 const github = require('@actions/github');
 const { exit } = require('process');
 
@@ -14,6 +15,7 @@ exec(`"%PROGRAMFILES(X86)%\\Inno Setup 6\\iscc.exe" ${options} "${path}"`,
         console.log(stderr);
         }
     )} else {
+const code = 1;
 console.error('Error: this action is only supported on Windows!')
-code = 1; process.exit(code);
+process.exit(code);
 }
