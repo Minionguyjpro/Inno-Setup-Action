@@ -1,0 +1,35 @@
+{
+  "name": "node-cmd",
+  "version": "5.0.0",
+  "description": "Simple commandline/terminal/shell interface to allow you to run cli or bash style commands as if you were in the terminal.",
+  "main": "cmd.js",
+  "directories": {
+    "example": "example"
+  },
+  "engines" : {
+    "node" : ">=6.4.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RIAEvangelist/node-cmd.git"
+  },
+  "keywords": [
+    "commandline",
+    "terminal",
+    "shell",
+    "cmd",
+    "cli",
+    "bash",
+    "script",
+    "node"
+  ],
+  "author": "Brandon Nozaki Miller",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/RIAEvangelist/node-cmd/issues"
+  },
+  "homepage": "https://github.com/RIAEvangelist/node-cmd"
+}
