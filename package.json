@@ -1,0 +1,17 @@
+{
+  "name": "inno-setup-action",
+  "version": "1.0.0",
+  "description": "GitHub action to compile .iss (Inno Setup Script) files.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^5.1.1",
+    "node-cmd": "^5.0.0"
+  }
+}

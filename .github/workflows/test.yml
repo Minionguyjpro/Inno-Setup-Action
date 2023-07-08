@@ -1,0 +1,22 @@
+name: Run a test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+ test:
+    runs-on: windows-latest
+    steps: 
+     
+     - name: Inno Setup Action (push)
+       uses: Minionguyjpro/Inno-Setup-Action@main
+       with:
+         path: ${{} github.workspace }}\scripts\test.iss
+       
+       
+     - name: Inno Setup Action (pull request)
+       uses: ./
+       with:
+         path: ${{} github.workspace }}\scripts\test.iss
+       if: ${{ github.event_name == 'pull_request' }}
