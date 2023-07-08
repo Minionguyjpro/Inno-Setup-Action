@@ -12,7 +12,7 @@ jobs:
      - name: Inno Setup Action (push)
        uses: Minionguyjpro/Inno-Setup-Action@main
        with:
-         path: ${{} github.workspace }}\scripts\test.iss
+         path: ${{ github.workspace }}\scripts\test.iss
        
        
      - name: Inno Setup Action (pull request)
