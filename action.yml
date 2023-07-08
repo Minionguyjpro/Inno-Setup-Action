@@ -1,8 +1,9 @@
 name: 'Inno Setup Action'
 author: 'Minionguyjpro'
+branding:
   icon: 'box'
   color: 'green'
-description: 'GitHub action to compile .iss (Inno Setup Script) files'
+description: 'GitHub action to compile .iss (Inno Setup Script) files.'
 
 inputs:
   path:  # id of input
