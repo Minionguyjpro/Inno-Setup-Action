@@ -9,12 +9,10 @@ var exec = require('child_process').exec;
 if (process.platform === 'win32') {
 exec(`\"%PROGRAMFILES(X86)%\\Inno Setup 6\\iscc.exe\" \"${path}\"`,
     function (error, stdout, stderr) {
-        console.log('stdout: ' + stdout);
-        console.log('stderr: ' + stderr);
-        if (error !== null) {
-             console.log('exec error: ' + error);
+        console.log(stdout);
+        console.log(stderr);
         }
-    })} else {
+    )} else {
 console.error('Error: this action is only supported on Windows!')
 code = 1; process.exit(code);
 }
