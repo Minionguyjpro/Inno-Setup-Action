@@ -11,6 +11,11 @@ jobs:
      
      - uses: actions/checkout@v3
      
+     - name: Setup NPM
+       uses: bahmutov/npm-install@v1
+       with:
+         node-version: 16
+         
      - name: Test code with ESLint
        run: npx eslint "./dist/**"
        
@@ -18,7 +23,6 @@ jobs:
        uses: Minionguyjpro/Inno-Setup-Action@main
        with:
          path: ${{ github.workspace }}\scripts\test.iss
-       
        
      - name: Inno Setup Action (pull request)
        uses: ./
