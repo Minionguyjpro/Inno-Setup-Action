@@ -20,7 +20,7 @@ jobs:
 ```
 
 ---
-| **Key Name** | **Required** | **Example**    | **Default Value** | **Description**                                                                                                                                                        |
-|--------------|--------------|----------------|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ``path``     | Yes          | /src/setup.iss | N/A               | Path to input .iss script file.                                                                                                                                        |
-| ``options``  | No           | /O+            | N/A               | Extra arguments/options to include. Include the slashes for them. See [this page](https://jrsoftware.org/ishelp/index.php?topic=compilercmdline) for more information. |
+| **Key Name** | **Required** | **Example**        | **Default Value** | **Description**                                                                                                                                                        |
+|--------------|--------------|--------------------|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ``path``     | Yes          | ``/src/setup.iss`` | N/A               | Path to input .iss script file.                                                                                                                                        |
+| ``options``  | No           | ``/O+``            | N/A               | Extra arguments/options to include. Include the slashes for them. See [this page](https://jrsoftware.org/ishelp/index.php?topic=compilercmdline) for more information. |
