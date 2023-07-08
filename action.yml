@@ -1,9 +1,14 @@
 name: 'Inno Setup Action'
+author: 'Minionguyjpro'
+  icon: 'box'
+  color: 'green'
 description: 'GitHub action to compile .iss (Inno Setup Script) files'
+
 inputs:
   path:  # id of input
     description: 'Path to input .iss script file'
     required: true
+    
 runs:
   using: 'node16'
   main: 'dist/index.js'
