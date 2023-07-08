@@ -1,7 +1,6 @@
 const core = require('@actions/core');
 // eslint-disable-next-line no-unused-vars
 const github = require('@actions/github');
-const { exit } = require('process');
 
 const options = core.getInput('options');
 const path = core.getInput('path');
