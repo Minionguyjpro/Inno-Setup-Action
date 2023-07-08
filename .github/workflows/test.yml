@@ -9,7 +9,7 @@ jobs:
     runs-on: windows-latest
     steps: 
      
-     - uses: action/checkout@v3
+     - uses: actions/checkout@v3
      
      - name: Inno Setup Action (push)
        uses: Minionguyjpro/Inno-Setup-Action@main
