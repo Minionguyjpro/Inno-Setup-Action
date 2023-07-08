@@ -6,9 +6,12 @@ branding:
 description: 'GitHub action to compile .iss (Inno Setup Script) files.'
 
 inputs:
-  path:  # id of input
+  path:
     description: 'Path to input .iss script file'
     required: true
+  options:
+    description: 'Extra arguments/options to include. Include the slashes for them.'
+    required: false
     
 runs:
   using: 'node16'
