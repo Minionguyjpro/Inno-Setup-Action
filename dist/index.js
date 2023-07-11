@@ -1,4 +1,5 @@
 const core = require('@actions/core');
+// eslint-disable-next-line no-unused-vars
 const github = require('@actions/github');
 
 const workspacePath = process.env.GITHUB_WORKSPACE;
@@ -14,7 +15,7 @@ if (process.platform === 'win32') {
     process.exit(code);
   }
 
-  exec(`"%PROGRAMFILES(X86)%\\Inno Setup 6\\iscc.exe" ${options} "${path}"`, function (error, stdout, stderr) {
+  exec(`"%PROGRAMFILES(X86)%\\Inno Setup 6\\iscc.exe" ${options} "${workspacePath}/${path}"`, function (error, stdout, stderr) {
     console.log(stdout);
     console.log(stderr);
   });
