@@ -9,7 +9,7 @@ const path = core.getInput('path');
 var exec = require('child_process').exec;
 
 if (process.platform === 'win32') {
-    if (!workspacePath) {
+    if (workspacePath === "") {
         const code = 1;
         console.error('Error: the repository was not cloned! Please specify the actions/checkout Github Action before this step.')
         process.exit(code);
