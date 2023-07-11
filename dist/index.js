@@ -13,12 +13,12 @@ if (process.platform === 'win32') {
     const code = 1;
     console.error('Error: The repository was not cloned. Please specify the actions/checkout action before this step.');
     process.exit(code);
+  } else {
+    exec(`"%PROGRAMFILES(X86)%\\Inno Setup 6\\iscc.exe" ${options} "${workspacePath}\\${path}"`, function (error, stdout, stderr) {
+      console.log(stdout);
+      console.log(stderr);
+    });
   }
-
-  exec(`"%PROGRAMFILES(X86)%\\Inno Setup 6\\iscc.exe" ${options} "${workspacePath}/${path}"`, function (error, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-  });
 } else {
   const code = 1;
   console.error('Error: This action is only supported on Windows!');
