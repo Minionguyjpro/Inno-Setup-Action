@@ -9,7 +9,6 @@ jobs:
     runs-on: windows-latest
     steps: 
      
-     - uses: actions/checkout@v3
      
      - name: Setup NPM
        uses: bahmutov/npm-install@v1
