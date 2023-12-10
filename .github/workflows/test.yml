@@ -20,7 +20,7 @@ jobs:
          cat package-lock.json
          
      - name: Test code with ESLint
-       run: eslint "./dist/**"
+       run: npx eslint "./dist/**"
        
      - name: Inno Setup Action (push)
        uses: Minionguyjpro/Inno-Setup-Action@main
