@@ -13,8 +13,11 @@ jobs:
      - uses: actions/setup-node@v4
        with:
          node-version: 16
-         cache: 'npm'
-         cache-dependency-path: 'package-lock.json'
+
+     - name: Read package-lock.json
+       run: |
+         npm ci
+         cat package-lock.json
          
      - name: Test code with ESLint
        run: eslint "./dist/**"
