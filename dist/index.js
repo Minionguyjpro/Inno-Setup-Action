@@ -15,6 +15,10 @@ if (process.platform === 'win32') {
     exec(`"%PROGRAMFILES(X86)%\\Inno Setup 6\\iscc.exe" ${options} "${workspacePath}\\${path}"`, function (error, stdout, stderr) {
       console.log(stdout);
       console.log(stderr);
+      if (error) {
+        const code = error.code || 1;
+        process.exit(code);
+      }
     });
   } else {
     const code = 1;
