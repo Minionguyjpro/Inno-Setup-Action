@@ -31,5 +31,5 @@ jobs:
      - name: Inno Setup Action (pull request)
        uses: ./
        with:
-         path: ${ github.workspace }}\scripts\test.iss
+         path: scripts\test.iss
        if: ${{ github.event_name == 'pull_request' }}
