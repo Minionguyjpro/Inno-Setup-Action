@@ -15,11 +15,14 @@ if (process.platform === 'win32') {
       console.log(stdout);
       if (error) {
         core.error(stderr);
+        exit(1);
       }
     });
   } else {
     core.error('Error: The repository was not cloned. Please specify the actions/checkout action before this step.');
+    exit(1);
   }
 } else {
   core.error('Error: This action is only supported on Windows!');
+  exit(1);
 }
