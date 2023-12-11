@@ -22,11 +22,11 @@ if (process.platform === 'win32') {
     });
   } else {
     error = { code: 1 }
-    core.setFailed('Error: The repository was not cloned. Please specify the actions/checkout action before this step.');
+    core.setFailed('The repository was not cloned. Please specify the actions/checkout action before this step.');
     process.exit(error.code);
   }
 } else {
   error = { code: 1 };
-  core.setFailed('Error: This action is only supported on Windows!');
+  core.setFailed('This action is only supported on Windows!');
   process.exit(error.code);
 }
