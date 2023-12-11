@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Compile .ISS to .EXE Installer
-        uses: Minionguyjpro/Inno-Setup-Action@v1.0.0
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
           path: /src/setup.iss
           options: /O+
