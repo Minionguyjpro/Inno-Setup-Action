@@ -8,7 +8,8 @@ const path = core.getInput('path');
 if (process.platform === 'win32') {
   try {
     if (fs.existsSync(workspacePath) && fs.readdirSync(workspacePath).length > 0) {
-      const { stderr } = require('child_process').execSync(`"%PROGRAMFILES(X86)%\\Inno Setup 6\\iscc.exe" ${options} "${workspacePath}\\${path}"`, { stdio: 'inherit' });
+      const { stdout, stderr } = require('child_process').execSync(`"%PROGRAMFILES(X86)%\\Inno Setup 6\\iscc.exe" ${options} "${workspacePath}\\${path}"`, { stdio: 'pipe' });
+      console.log(stdout);
       if (stderr) {
         throw new Error(stderr);
       }
