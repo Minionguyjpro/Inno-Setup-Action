@@ -25,7 +25,7 @@ jobs:
      - name: Inno Setup Action (push)
        uses: Minionguyjpro/Inno-Setup-Action@main
        with:
-         path: scripts\test.iss
+         path: scripts/test.iss
          options: /O+
        
      - name: Inno Setup Action (pull request)
