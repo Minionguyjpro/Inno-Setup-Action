@@ -10,7 +10,7 @@ const path = core.getInput('path');
 var exec = require('child_process').exec;
 
 if (process.platform === 'win32') {
-  if (workspacePath && workspacePath.trim() !== '') {
+  if (workspacePath && fs.existsSync(workspacePath) && fs.lstatSync(workspacePath).isDirectory()) {
     exec(`"%PROGRAMFILES(X86)%\\Inno Setup 6\\iscc.exe" ${options} "${workspacePath}\\${path}"`, { stdio: 'ignore' }, function (error, stdout, stderr) {
       console.log(stdout);
       console.log(stderr);
