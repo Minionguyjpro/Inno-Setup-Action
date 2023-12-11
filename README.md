@@ -18,6 +18,7 @@ jobs:
           path: /src/setup.iss
           options: /O+
 ```
+The action will tell you it saved the file somewhere around in ``D:\YOURREPONAME\YOURREPONAME\`` and maybe in another directory (depends on how you've defined the output directory in your .iss script). In this case, ``D:\YOURREPONAME\YOURREPONAME\`` is the root directory of your cloned GitHub repository workspace in the action. Keep this path layout in mind if you need it for other things in your workflow. If you'd choose to save the setup file in the root directory (by example not specifing a custom directory) and calling it setup.exe, it would be at ``D:\YOURREPONAME\YOURREPONAME\setup.exe``.
 
 ---
 | **Key Name** | **Required** | **Example**        | **Default Value** | **Description**                                                                                                                                                        |
