@@ -10,8 +10,7 @@ const path = core.getInput('path');
 var exec = require('child_process').exec;
 
 if (process.platform === 'win32') {
-  if (fs.existsSync(process.env.GITHUB_WORKSPACE)) {
-    console.log(`Path used: "${workspacePath}\\${path}"`);
+  if (workspacePath) {
     exec(`"%PROGRAMFILES(X86)%\\Inno Setup 6\\iscc.exe" ${options} "${workspacePath}\\${path}"`, { stdio: 'ignore' }, function (error, stdout, stderr) {
       console.log(stdout);
       console.log(stderr);
