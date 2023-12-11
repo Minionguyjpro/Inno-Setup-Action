@@ -9,6 +9,8 @@ const path = core.getInput('path');
 
 var exec = require('child_process').exec;
 
+let error;
+
 if (process.platform === 'win32') {
   if (fs.existsSync(process.env.GITHUB_WORKSPACE) && fs.readdirSync(workspacePath).length > 0) {
     exec(`"%PROGRAMFILES(X86)%\\Inno Setup 6\\iscc.exe" ${options} "${workspacePath}\\${path}"`, { stdio: 'ignore' }, function (error, stdout, stderr) {
@@ -19,12 +21,12 @@ if (process.platform === 'win32') {
       }
     });
   } else {
-    error.code = 1;
+    error = { code: 1 }
     core.setFailed('Error: The repository was not cloned. Please specify the actions/checkout action before this step.');
     process.exit(error.code);
   }
 } else {
-  error.code = 1;
+  error = { code: 1 };
   core.setFailed('Error: This action is only supported on Windows!');
   process.exit(error.code);
 }
