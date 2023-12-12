@@ -21,15 +21,9 @@ jobs:
          
      - name: Test code with ESLint
        run: npx eslint "./dist/**"
-       
-     - name: Inno Setup Action (push)
-       uses: Minionguyjpro/Inno-Setup-Action@main
-       with:
-         path: /scripts/test.iss
-         options: /O+
-       
-     - name: Inno Setup Action (pull request)
+
+     - name: Inno Setup Action
        uses: ./
        with:
-         path: scripts\test.iss
-       if: ${{ github.event_name == 'pull_request' }}
+         path: scripts/test.iss
+         options: /O+
