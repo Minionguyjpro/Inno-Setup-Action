@@ -1,0 +1,74 @@
+---
+site_name: Minecraft Server on Docker (Java Edition)
+site_url: https://inno-setup-action.readthedocs.io/en/latest/
+site_description: Documentation for the Inno Setup action on GitHub Actions (in a workflow)
+repo_url: https://github.com/Minionguyjpro/Inno-Setup-Action
+edit_uri: blob/master/docs/
+theme:
+  name: material
+  features:
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
+  locale: en
+
+  highlightjs: true
+  hljs_languages:
+    - yaml
+    - bash
+    - java
+    - docker
+    - shell
+    - json
+
+extra_css:
+  - css/extra.css
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - attr_list
+  - def_list
+  - tables
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.details
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - mdx_gh_links:
+      user: camalot
+      repo: mkdocs-test
+  - mkdocs-click
+copyright: Copyright &copy; Minionguyjpro 2023.
+plugins:
+  - search
+  - autorefs
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_section_style: list
+            members_order: source
+            show_root_heading: true
+            show_source: false
+            show_signature_annotations: true
+  # https://github.com/ultrabug/mkdocs-static-i18n
+  - i18n:
+      languages:
+        - locale: en
+          name: English
+          build: true
+          default: true
+  - literate-nav:
+      nav_file: README.md
+      implicit_index: true
