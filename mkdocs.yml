@@ -1,5 +1,5 @@
 ---
-site_name: Minecraft Server on Docker (Java Edition)
+site_name: Inno Setup Action (GitHub Actions)
 site_url: https://inno-setup-action.readthedocs.io/en/latest/
 site_description: Documentation for the Inno Setup action on GitHub Actions (in a workflow)
 repo_url: https://github.com/Minionguyjpro/Inno-Setup-Action
