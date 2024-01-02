@@ -1,9 +1,6 @@
 const core = require("@actions/core");
 
-// Mocking the entire @actions/core module
-jest.mock("@actions/core");
-
-// Mocking specific methods
+// Mocking specific methods of @actions/core
 core.getInput = jest.fn().mockReturnValueOnce("options").mockReturnValueOnce("path");
 core.setFailed = jest.fn();
 
@@ -19,7 +16,7 @@ jest.mock('child_process', () => ({
   }),
 }));
 
-// Now, you can import and test your main.js module
+// Importing the main module after the mocks are set
 const main = require("../src/main");
 
 // Add your test cases here
