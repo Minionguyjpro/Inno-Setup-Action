@@ -1,38 +1,15 @@
 // main.test.js
 const core = require("@actions/core");
 const fs = require("fs");
-const { exec } = require("child_process");  // Add this line to import exec
+const { main } = require("../src/main"); // Adjust the path accordingly
 
-function main() {
-  const workspacePath = process.env.GITHUB_WORKSPACE;
+jest.mock("@actions/core");
 
-  const options = core.getInput("options");
-  const path = core.getInput("path");
-
-  let repoError;
-  let platformError;
-
-  if (process.platform === "win32") {
-    if (fs.existsSync(workspacePath) && fs.readdirSync(workspacePath).length > 0) {
-      exec(`"%PROGRAMFILES(X86)%\\Inno Setup 6\\iscc.exe" ${options} "${workspacePath}\\${path}"`, { stdio: "ignore" }, function (execError, stdout, stderr) {
-        console.log(stdout);
-
-        if (execError) {
-          repoError = { code: execError.code || 1 };
-          core.setFailed(stderr);
-          process.exit(repoError.code);
-        }
-      });
-    } else {
-      repoError = { code: 1 };
-      core.setFailed("The repository was not cloned. Please specify the actions/checkout action before this step.");
-      process.exit(repoError.code);
-    }
-  } else {
-    platformError = { code: 1 };
-    core.setFailed("This action is only supported on Windows!");
-    process.exit(platformError.code);
-  }
-}
-
-module.exports = { main };
+describe("Inno Setup Action", () => {
+  it("should execute Inno Setup command on Windows with existing workspace", () => {
+    process.platform = "win32";
+    main();
+    expect(core.getInput).toHaveBeenCalledTimes(2);
+    expect(fs.existsSync).toHaveBeenCalled();
+  });
+});
