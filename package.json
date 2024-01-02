@@ -5,7 +5,6 @@
   "author": "Minionguyjpro",
   "private": false,
   "homepage": "https://github.com/Minionguyjpro/Inno-Setup-Action#readme",
-  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Minionguyjpro/Inno-Setup-Action.git"
