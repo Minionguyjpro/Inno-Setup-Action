@@ -10,7 +10,7 @@ const options = core.getInput('options')
 const path = core.getInput('path')
 
 // Importing the child_process module for executing shell commands
-var exec = require('child_process').exec
+const exec = require('child_process').exec
 
 // Initializing an error variable
 let error;
