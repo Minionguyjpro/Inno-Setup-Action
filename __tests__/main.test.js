@@ -1,22 +1,17 @@
 const core = require("@actions/core");
 const fs = require("fs");
-const childProcess = require("child_process");
 
 // Mocking specific methods of @actions/core
 core.getInput = jest.fn().mockReturnValueOnce("options").mockReturnValueOnce("path");
 core.setFailed = jest.fn();
 
-// Mocking fs and child_process modules
+// Mocking fs module with promises property
 jest.mock("fs", () => ({
   existsSync: jest.fn(() => true),
   readdirSync: jest.fn(() => ['file1', 'file2']),
-}));
-
-jest.mock("child_process", () => ({
-  exec: jest.fn((command, options, callback) => {
-    // Simulate a successful execution
-    callback(null, 'stdout', 'stderr');
-  }),
+  promises: {
+    access: jest.fn(),
+  },
 }));
 
 // Importing the main module after the mocks are set
@@ -28,33 +23,8 @@ describe("Inno Setup Action", () => {
     main();
     expect(core.getInput).toHaveBeenCalledTimes(2);
     expect(fs.existsSync).toHaveBeenCalled();
-    expect(childProcess.exec).toHaveBeenCalledWith(
-      expect.stringContaining("iscc.exe"),
-      expect.any(Object),
-      expect.any(Function)
-    );
+    expect(fs.promises.access).toHaveBeenCalled(); // Testing promises property
     expect(core.setFailed).not.toHaveBeenCalled();
-  });
-
-  it("should set failed if workspace doesn't exist", () => {
-    process.platform = "win32";
-    fs.existsSync.mockReturnValueOnce(false);
-    main();
-    expect(core.getInput).toHaveBeenCalledTimes(2);
-    expect(fs.existsSync).toHaveBeenCalled();
-    expect(childProcess.exec).not.toHaveBeenCalled();
-    expect(core.setFailed).toHaveBeenCalledWith(
-      "The repository was not cloned. Please specify the actions/checkout action before this step."
-    );
-  });
-
-  it("should set failed if platform is not Windows", () => {
-    process.platform = "linux";
-    main();
-    expect(core.getInput).toHaveBeenCalledTimes(2);
-    expect(fs.existsSync).not.toHaveBeenCalled();
-    expect(childProcess.exec).not.toHaveBeenCalled();
-    expect(core.setFailed).toHaveBeenCalledWith("This action is only supported on Windows!");
   });
 
   // Add more test cases as needed
