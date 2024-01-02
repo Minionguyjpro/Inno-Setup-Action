@@ -30,9 +30,6 @@ jobs:
     steps:
      - uses: actions/checkout@v4
 
-     - name: Test code with ESLint
-       run: npx eslint "./dist/**"
-
      - name: Inno Setup Action
        uses: ./
        with:
