@@ -1,5 +1,6 @@
 // main.test.js
 
+const core = require('@actions/core')
 const fs = require('fs');
 const childProcess = require('child_process');
 const { testFunction } = require('../src/main');
