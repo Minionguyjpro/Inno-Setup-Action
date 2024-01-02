@@ -15,7 +15,14 @@ jobs:
        with:
          # Make sure the release step uses its own credentials.
          persist-credentials: false
-
+         
+     - name: Setup Node.js
+       id: setup-node
+       uses: actions/setup-node@v4
+       with:
+         node-version-file: .node-version
+         cache: npm
+         
      - run: |
          npm ci
          npm run all
@@ -29,6 +36,7 @@ jobs:
          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
  test:
+    needs: build
     runs-on: windows-latest
     steps:
      - uses: actions/checkout@v4
