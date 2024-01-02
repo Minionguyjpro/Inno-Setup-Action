@@ -38,29 +38,29 @@
   "eslintConfig": {
     "extends": "./.github/linters/.eslintrc.yml"
   },
-    "jest": {
-    "verbose": true,
-    "clearMocks": true,
-    "testEnvironment": "node",
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "testMatch": [
-      "**/*.test.js"
-    ],
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/dist/"
-    ],
-    "coverageReporters": [
-      "json-summary",
-      "text",
-      "lcov"
-    ],
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "./src/**"
-    ]
+  "jest": {
+  "verbose": true,
+  "clearMocks": true,
+  "testEnvironment": "node",
+  "moduleFileExtensions": [
+    "js"
+  ],
+  "testMatch": [
+    "**/*.test.js"
+  ],
+  "testPathIgnorePatterns": [
+    "/node_modules/",
+    "/dist/"
+  ],
+  "coverageReporters": [
+    "json-summary",
+    "text",
+    "lcov"
+  ],
+  "collectCoverage": true,
+  "collectCoverageFrom": [
+    "./src/**"
+  ]
   },
     "dependencies": {
       "@actions/core": "^1.10.1",
