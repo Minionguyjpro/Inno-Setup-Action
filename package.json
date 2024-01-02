@@ -4,9 +4,14 @@
   "description": "GitHub action to compile .iss (Inno Setup Script) files.",
   "main": "dist/index.js",
   "scripts": {
-    "lint": "eslint src/**",
-    "package": "ncc build src/main.js --no-cache",
-    "all": "npm run lint && npm run package"
+    "bundle": "npm run format:write && npm run package",
+    "format:write": "prettier --write **/*.js",
+    "format:check": "prettier --check **/*.js",
+    "lint": "npx eslint . -c ./.github/linters/.eslintrc.yml",
+    "package": "ncc build src/index.js --license licenses.txt",
+    "package:watch": "npm run package -- --watch",
+    "test": "jest",
+    "all": "npm run format:write && npm run lint && npm run test && npm run package"
   },
   "keywords": [],
   "author": "",
