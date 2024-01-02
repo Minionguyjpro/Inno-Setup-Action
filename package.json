@@ -4,12 +4,10 @@
   "description": "GitHub action to compile .iss (Inno Setup Script) files.",
   "main": "dist/index.js",
   "scripts": {
-    "format": "prettier --write **/*.js",
-    "format-check": "prettier --check **/*.js",
-    "lint": "eslint ./src/**",
-    "package": "ncc build --source-map",
+    "lint": "eslint src/**",
     "test": "jest",
-    "all": "npm run format && npm run format && npm run lint && npm run package && npm run test"
+    "package": "ncc build src/main.js --source-map",
+    "all": "npm run lint && npm run test && npm run package"
   },
   "keywords": [],
   "author": "",
