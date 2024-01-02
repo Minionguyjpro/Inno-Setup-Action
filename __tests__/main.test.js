@@ -1,71 +1,70 @@
 // main.test.js
 
-const core = require('@actions/core')
+const core = require('@actions/core');
 const fs = require('fs');
-const childProcess = require('child_process');
-const { testFunction } = require('../src/main');
+const { exec } = require('child_process');
 
-jest.mock('@actions/core', () => ({
-  getInput: jest.fn(),
-  setFailed: jest.fn(),
-}));
+// Mock the @actions/core module
+jest.mock('@actions/core');
 
-jest.mock('fs', () => ({
-  existsSync: jest.fn(),
-  readdirSync: jest.fn(),
-}));
+// ... other imports and setup ...
 
-jest.mock('child_process', () => ({
-  exec: jest.fn(),
-}));
-
-describe('Test suite for index.js', () => {
+describe('Test suite for main.js', () => {
   beforeEach(() => {
     // Clear mock calls before each test
     jest.clearAllMocks();
   });
 
-  test('Handles Windows platform with existing repository', () => {
-    process.platform = 'win32';
-    fs.existsSync.mockReturnValue(true);
-    fs.readdirSync.mockReturnValue(['file1', 'file2']);
-    childProcess.exec.mockImplementation((command, options, callback) => {
-      // Simulate successful execution
-      callback(null, 'stdout content', 'stderr content');
-    });
-
-    // Call the function you want to test
-    testFunction();
-
-    // Assertions
-    expect(fs.existsSync).toHaveBeenCalledWith(process.env.GITHUB_WORKSPACE);
-    expect(fs.readdirSync).toHaveBeenCalledWith(process.env.GITHUB_WORKSPACE);
-    expect(childProcess.exec).toHaveBeenCalled();
-    expect(core.setFailed).not.toHaveBeenCalled();
-  });
-
-  test('Handles Windows platform with missing repository', () => {
-    process.platform = 'win32';
+  it('should handle repository not cloned error', async () => {
+    // Mock fs.existsSync to simulate repository not cloned scenario
     fs.existsSync.mockReturnValue(false);
 
-    // Call the function you want to test
-    testFunction();
+    // Run your function that checks the repository
+    await require('../src/main');
 
-    // Assertions
-    expect(core.setFailed).toHaveBeenCalledWith(
-      'The repository was not cloned. Please specify the actions/checkout action before this step.'
-    );
+    // Verify that the error is set and the process is exited
+    expect(core.setFailed).toHaveBeenCalledWith('The repository was not cloned. Please specify the actions/checkout action before this step.');
     expect(process.exit).toHaveBeenCalledWith(1);
   });
 
-  test('Handles non-Windows platform', () => {
-    process.platform = 'linux';
+  it('should handle Windows platform error', async () => {
+    // Mock process.platform to simulate non-Windows scenario
+    Object.defineProperty(process, 'platform', {
+      value: 'linux',
+    });
 
-    // Call the function you want to test
-    testFunction();
+    // Run your function that checks the platform
+    await require('../src/main');
 
-    // Assertions
+    // Verify that the error is set and the process is exited
     expect(core.setFailed).toHaveBeenCalledWith('This action is only supported on Windows!');
     expect(process.exit).toHaveBeenCalledWith(1);
+  });
+
+  it('should execute Inno Setup compiler command on Windows', async () => {
+    // Mock fs.existsSync to simulate repository cloned scenario
+    fs.existsSync.mockReturnValue(true);
+
+    // Mock process.platform to simulate Windows scenario
+    Object.defineProperty(process, 'platform', {
+      value: 'win32',
+    });
+
+    // Mock child_process.exec to simulate a successful execution
+    exec.mockImplementation((command, options, callback) => {
+      callback(null, 'stdout', 'stderr');
+    });
+
+    // Run your function that executes the Inno Setup compiler command
+    await require('../src/main');
+
+    // Verify that the process is not exited and no error is set
+    expect(core.setFailed).not.toHaveBeenCalled();
+    expect(process.exit).not.toHaveBeenCalled();
+  });
+
+  afterEach(() => {
+    // Restore the original environment variables after each test
+    jest.resetModules();
   });
 });
