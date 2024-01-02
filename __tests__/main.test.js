@@ -1,70 +1,81 @@
-// main.test.js
-
 const core = require('@actions/core');
-const fs = require('fs');
-const { exec } = require('child_process');
 
-// Mock the @actions/core module
-jest.mock('@actions/core');
+jest.mock('fs', () => ({
+  existsSync: jest.fn(() => true),
+  readdirSync: jest.fn(() => ['file1', 'file2']),
+}));
 
-// ... other imports and setup ...
+jest.mock('child_process', () => ({
+  exec: jest.fn((command, options, callback) => {
+    // Simulate a successful execution
+    callback(null, 'stdout', 'stderr');
+  }),
+}));
 
-describe('Test suite for main.js', () => {
+describe('Inno Setup Action', () => {
+  let originalPlatform;
+
+  beforeAll(() => {
+    // Save the original value of process.platform
+    originalPlatform = process.platform;
+  });
+
   beforeEach(() => {
-    // Clear mock calls before each test
+    // Reset the mocks before each test
     jest.clearAllMocks();
   });
 
-  it('should handle repository not cloned error', async () => {
-    // Mock fs.existsSync to simulate repository not cloned scenario
-    fs.existsSync.mockReturnValue(false);
+  afterAll(() => {
+    // Restore the original value of process.platform after all tests
+    Object.defineProperty(process, 'platform', {
+      value: originalPlatform,
+    });
+  });
 
-    // Run your function that checks the repository
+  it('should handle Windows platform', async () => {
+    process.env.GITHUB_WORKSPACE = '/path/to/workspace';
     await require('../src/main');
+    expect(core.setFailed).not.toHaveBeenCalled();
+    expect(process.exit).not.toHaveBeenCalled();
+  });
 
-    // Verify that the error is set and the process is exited
+  it('should handle missing GitHub workspace', async () => {
+    process.env.GITHUB_WORKSPACE = '/path/to/nonexistent/workspace';
+    await require('../src/main');
     expect(core.setFailed).toHaveBeenCalledWith('The repository was not cloned. Please specify the actions/checkout action before this step.');
     expect(process.exit).toHaveBeenCalledWith(1);
   });
 
   it('should handle Windows platform error', async () => {
-    // Mock process.platform to simulate non-Windows scenario
+    const exitSpy = jest.spyOn(process, 'exit').mockImplementation((code) => {
+      // Do nothing
+    });
+
     Object.defineProperty(process, 'platform', {
       value: 'linux',
     });
-
-    // Run your function that checks the platform
     await require('../src/main');
 
-    // Verify that the error is set and the process is exited
     expect(core.setFailed).toHaveBeenCalledWith('This action is only supported on Windows!');
-    expect(process.exit).toHaveBeenCalledWith(1);
+    expect(exitSpy).toHaveBeenCalledWith(1);
+
+    // Restore the original implementation of process.exit
+    exitSpy.mockRestore();
   });
 
-  it('should execute Inno Setup compiler command on Windows', async () => {
-    // Mock fs.existsSync to simulate repository cloned scenario
-    fs.existsSync.mockReturnValue(true);
-
-    // Mock process.platform to simulate Windows scenario
-    Object.defineProperty(process, 'platform', {
-      value: 'win32',
+  it('should handle Inno Setup compiler error', async () => {
+    jest.spyOn(process, 'exit').mockImplementation((code) => {
+      // Do nothing
     });
 
-    // Mock child_process.exec to simulate a successful execution
-    exec.mockImplementation((command, options, callback) => {
-      callback(null, 'stdout', 'stderr');
+    // Simulate an error during the execution of the Inno Setup compiler
+    jest.spyOn(require('child_process'), 'exec').mockImplementationOnce((command, options, callback) => {
+      callback(new Error('Inno Setup compiler error'), 'stdout', 'stderr');
     });
 
-    // Run your function that executes the Inno Setup compiler command
     await require('../src/main');
 
-    // Verify that the process is not exited and no error is set
-    expect(core.setFailed).not.toHaveBeenCalled();
-    expect(process.exit).not.toHaveBeenCalled();
-  });
-
-  afterEach(() => {
-    // Restore the original environment variables after each test
-    jest.resetModules();
+    expect(core.setFailed).toHaveBeenCalledWith('stderr');
+    expect(process.exit).toHaveBeenCalledWith(1);
   });
 });
