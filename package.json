@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+    "package": "ncc build --source-map"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +16,32 @@
     "node-cmd": "^5.0.0"
   },
   "devDependencies": {
-    "eslint": "^8.56.0"
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "eslint": "^8.56.0",
+    "semantic-release": "^22.0.12"
+  },
+  "release": {
+    "branches": "main",
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/npm",
+      "@semantic-release/github",
+      ["@semantic-release/exec", {
+        "prepare": "npm run package"
+      }],
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "dist",
+            "package.json",
+            "package-lock.json"
+          ],
+          "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+        }
+      ]
+    ]
   }
 }

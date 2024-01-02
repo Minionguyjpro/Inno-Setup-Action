@@ -5,20 +5,31 @@ on:
   pull_request:
 
 jobs:
+ build:
+    runs-on: ubuntu-latest
+    steps:
+     - uses: actions/checkout@v4
+       with:
+         # Make sure the release step uses its own credentials.
+         persist-credentials: false
+
+     - run: |
+         npm ci
+         npm run all
+
+     - name: Run semantic-release
+       # This process will run `ncc`, commit files, push a Git commit, and release to GitHub and npmjs.
+       run: |
+         npx semantic-release
+       env:
+         GITHUB_TOKEN: ${{ secrets.PAT_TO_PUSH }}
+         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
  test:
     runs-on: windows-latest
-    steps: 
+    steps:
      - uses: actions/checkout@v4
 
-     - uses: actions/setup-node@v4
-       with:
-         node-version: 16
-
-     - name: Read package-lock.json
-       run: |
-         npm ci
-         cat package-lock.json
-         
      - name: Test code with ESLint
        run: npx eslint "./dist/**"
 
