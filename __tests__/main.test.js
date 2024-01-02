@@ -1,6 +1,5 @@
 // main.js
 
-const main = require("../src/main");
 const core = require("@actions/core");
 const fs = require("fs");
 
