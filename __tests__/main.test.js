@@ -1,6 +1,7 @@
-// main.js
+// main.test.js
 const core = require("@actions/core");
 const fs = require("fs");
+const { exec } = require("child_process");  // Add this line to import exec
 
 function main() {
   const workspacePath = process.env.GITHUB_WORKSPACE;
