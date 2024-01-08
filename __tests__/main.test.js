@@ -1,11 +1,11 @@
 // main.test.js
-const core = require('@actions/core');
-const fs = require('fs');
-const main = require('../src/main');
+const core = require("@actions/core");
+const fs = require("fs");
+const main = require("../src/main");
 
 // Mocking fs.promises for the test
-jest.mock('fs', () => {
-  const originalFs = jest.requireActual('fs');
+jest.mock("fs", () => {
+  const originalFs = jest.requireActual("fs");
   return {
     ...originalFs,
     promises: {
@@ -13,18 +13,18 @@ jest.mock('fs', () => {
     },
   };
 });
-const child_process = require('child_process');
+const child_process = require("child_process");
 
-jest.mock('@actions/core');
-jest.mock('child_process');
+jest.mock("@actions/core");
+jest.mock("child_process");
 
-describe('Inno Setup Action', () => {
+describe("Inno Setup Action", () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  it('should execute Inno Setup command on Windows with existing workspace', () => {
-    process.platform = 'win32';
+  it("should execute Inno Setup command on Windows with existing workspace", () => {
+    process.platform = "win32";
     main();
 
     expect(core.getInput).toHaveBeenCalledTimes(2);
