@@ -95,6 +95,7 @@
         {
           "assets": [
             "dist",
+            "dist/index.js",
             "package.json",
             "package-lock.json"
           ],
