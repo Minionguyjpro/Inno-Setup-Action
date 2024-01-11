@@ -66,11 +66,11 @@
     "@actions/core": "^1.10.1"
   },
   "devDependencies": {
-    "@semantic-release/exec": "^6.0.3",
-    "@semantic-release/git": "^10.0.1",
     "@babel/core": "^7.23.7",
     "@babel/eslint-parser": "^7.23.3",
     "@babel/preset-env": "^7.23.7",
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@vercel/ncc": "^0.38.1",
     "babel-preset-jest": "^29.6.3",
     "eslint": "^8.56.0",
@@ -87,9 +87,12 @@
       "@semantic-release/release-notes-generator",
       "@semantic-release/npm",
       "@semantic-release/github",
-      ["@semantic-release/exec", {
-        "prepare": "npm run package"
-      }],
+      [
+        "@semantic-release/exec",
+        {
+          "prepare": "npm run package"
+        }
+      ],
       [
         "@semantic-release/git",
         {
