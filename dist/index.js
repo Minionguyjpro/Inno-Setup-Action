@@ -24702,68 +24702,6 @@ exports["default"] = _default;
 
 /***/ }),
 
-/***/ 1713:
-/***/ ((__unused_webpack_module, __unused_webpack_exports, __nccwpck_require__) => {
-
-// Importing necessary modules
-const core = __nccwpck_require__(2186);
-const fs = __nccwpck_require__(7147);
-
-// Getting the path to the workspace from environment variables
-const workspacePath = process.env.GITHUB_WORKSPACE;
-
-// Getting inputs from the workflow
-const options = core.getInput("options");
-const path = core.getInput("path");
-
-// Importing the child_process module for executing shell commands
-const exec = (__nccwpck_require__(2081).exec);
-
-// Initializing error variables
-let repoError;
-let platformError;
-
-// Checking if the platform is Windows
-if (process.platform === "win32") {
-  // Checking if the GitHub workspace exists and is not empty
-  if (
-    fs.existsSync(process.env.GITHUB_WORKSPACE) &&
-    fs.readdirSync(workspacePath).length > 0
-  ) {
-    // Building and executing the Inno Setup compiler command
-    exec(
-      `"%PROGRAMFILES(X86)%\\Inno Setup 6\\iscc.exe" ${options} "${workspacePath}\\${path}"`,
-      { stdio: "ignore" },
-      function (execError, stdout, stderr) {
-        // Logging the standard output of the command
-        console.log(stdout);
-
-        // Handling errors, if any
-        if (execError) {
-          repoError = { code: execError.code || 1 };
-          core.setFailed(stderr);
-          process.exit(repoError.code);
-        }
-      },
-    );
-  } else {
-    // Setting an error code and failing the workflow if the repository is not cloned
-    repoError = { code: 1 };
-    core.setFailed(
-      "The repository was not cloned. Please specify the actions/checkout action before this step.",
-    );
-    process.exit(repoError.code);
-  }
-} else {
-  // Setting an error code and failing the workflow if the platform is not Windows
-  platformError = { code: 1 };
-  core.setFailed("This action is only supported on Windows!");
-  process.exit(platformError.code);
-}
-
-
-/***/ }),
-
 /***/ 9491:
 /***/ ((module) => {
 
@@ -26656,12 +26594,61 @@ module.exports = parseParams
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-/**
- * The entrypoint for the action.
- */
-const { run } = __nccwpck_require__(1713);
+// Importing necessary modules
+const core = __nccwpck_require__(2186);
+const fs = __nccwpck_require__(7147);
 
-run();
+// Getting the path to the workspace from environment variables
+const workspacePath = process.env.GITHUB_WORKSPACE;
+
+// Getting inputs from the workflow
+const options = core.getInput("options");
+const path = core.getInput("path");
+
+// Importing the child_process module for executing shell commands
+const exec = (__nccwpck_require__(2081).exec);
+
+// Initializing error variables
+let repoError;
+let platformError;
+
+// Checking if the platform is Windows
+if (process.platform === "win32") {
+  // Checking if the GitHub workspace exists and is not empty
+  if (
+    fs.existsSync(process.env.GITHUB_WORKSPACE) &&
+    fs.readdirSync(workspacePath).length > 0
+  ) {
+    // Building and executing the Inno Setup compiler command
+    exec(
+      `"%PROGRAMFILES(X86)%\\Inno Setup 6\\iscc.exe" ${options} "${workspacePath}\\${path}"`,
+      { stdio: "ignore" },
+      function (execError, stdout, stderr) {
+        // Logging the standard output of the command
+        console.log(stdout);
+
+        // Handling errors, if any
+        if (execError) {
+          repoError = { code: execError.code || 1 };
+          core.setFailed(stderr);
+          process.exit(repoError.code);
+        }
+      },
+    );
+  } else {
+    // Setting an error code and failing the workflow if the repository is not cloned
+    repoError = { code: 1 };
+    core.setFailed(
+      "The repository was not cloned. Please specify the actions/checkout action before this step.",
+    );
+    process.exit(repoError.code);
+  }
+} else {
+  // Setting an error code and failing the workflow if the platform is not Windows
+  platformError = { code: 1 };
+  core.setFailed("This action is only supported on Windows!");
+  process.exit(platformError.code);
+}
 
 })();
 
