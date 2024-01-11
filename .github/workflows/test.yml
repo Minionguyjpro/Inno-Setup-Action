@@ -15,6 +15,7 @@ jobs:
        with:
          # Make sure the release step uses its own credentials.
          persist-credentials: false
+         fetch-depth: 0
          
      - name: Setup Node.js
        id: setup-node
@@ -52,6 +53,8 @@ jobs:
     runs-on: windows-latest
     steps:
      - uses: actions/checkout@v4
+       with:
+         fetch-depth: 0
 
      - name: Inno Setup Action
        uses: ./
