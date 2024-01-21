@@ -49,7 +49,7 @@ jobs:
          commit_message: "Update CJS script"
        if: ${{ github.event_name != "pull_request" }}
 
-     - name: Commit and Push Changes
+     - name: Commit and Push Changes (PR)
        uses: devops-infra/action-commit-push@v2
        with:
          github_token: ${{ secrets.GITHUB_TOKEN }}
