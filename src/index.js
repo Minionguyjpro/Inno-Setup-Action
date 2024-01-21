@@ -43,7 +43,7 @@ if (process.platform === "win32") {
     // Setting an error code and failing the workflow if the repository is not cloned
     repoError = { code: 1 };
     core.setFailed(
-      "The repository was not cloned. Please specify the actions/checkout action before this step!",
+      "The repository was not cloned. Please specify the actions/checkout action before this step in order to continue!",
     );
     process.exit(repoError.code);
   }
