@@ -36,17 +36,28 @@ jobs:
          GITHUB_TOKEN: ${{ secrets.PAT_TO_PUSH }}
          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-     - name: Setup GitHub Actions bot
+     - name: Setup GitHub Actions Bot
        run: |
          git config --local user.email "github-actions[bot]@users.noreply.github.com"
          git config --local user.name "github-actions[bot]"
         
-     - name: Commit and push changes
+     - name: Commit and Push Changes (upstream)
        uses: devops-infra/action-commit-push@master
        with:
          github_token: "${{ secrets.GITHUB_TOKEN }}"
          commit_prefix: "[AUTO]"
          commit_message: "Update CJS script"
+       if: ${{ github.event_name != "pull_request" }}
+
+     - name: Commit and Push Changes
+       uses: devops-infra/action-commit-push@v2
+       with:
+         github_token: ${{ secrets.GITHUB_TOKEN }}
+         commit_prefix: "[AUTO]"
+         commit_message: "Update CJS script"
+         branch: ${{ github.event.pull_request.head.ref }}
+       if: ${{ github.event_name == "pull_request" }}
+        
 
  test:
     needs: build
