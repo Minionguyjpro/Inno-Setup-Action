@@ -55,6 +55,7 @@ jobs:
          github_token: ${{ secrets.GITHUB_TOKEN }}
          commit_prefix: "[AUTO]"
          commit_message: "Update CJS script"
+         target_branch: ${{ github.ref }}
        if: ${{ github.event_name == 'pull_request' }}
         
 
