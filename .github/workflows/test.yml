@@ -50,7 +50,7 @@ jobs:
        if: ${{ github.event_name != 'pull_request' }}
 
      - name: Commit and Push Changes (PR)
-       uses: devops-infra/action-commit-push@v2
+       uses: devops-infra/action-commit-push@master
        with:
          github_token: ${{ secrets.GITHUB_TOKEN }}
          commit_prefix: "[AUTO]"
