@@ -23,18 +23,11 @@ jobs:
        with:
          node-version-file: .node-version
          cache: npm
-         
-     - run: |
+
+     - name: Test JavaScript code and compile
+       run: |
          npm ci
          npm run all
-
-     - name: Run semantic-release
-       # This process will run `ncc`, commit files, push a Git commit, and release to GitHub and npmjs.
-       run: |
-         npx semantic-release
-       env:
-         GITHUB_TOKEN: ${{ secrets.PAT_TO_PUSH }}
-         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
      - name: Setup GitHub Actions Bot
        run: |
@@ -48,16 +41,6 @@ jobs:
          commit_prefix: "[AUTO]"
          commit_message: "Update CJS script"
        if: ${{ github.event_name != 'pull_request' }}
-
-     - name: Commit and Push Changes (PR)
-       uses: devops-infra/action-commit-push@master
-       with:
-         github_token: ${{ secrets.GITHUB_TOKEN }}
-         commit_prefix: "[AUTO]"
-         commit_message: "Update CJS script"
-         target_branch: ${{ github.ref }}
-       if: ${{ github.event_name == 'pull_request' }}
-        
 
  test:
     needs: build
