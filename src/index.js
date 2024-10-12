@@ -17,7 +17,7 @@ async function run() {
 
       if (workspaceExists && workspaceNotEmpty) {
         execFile(
-          `${process.env.ProgramFiles(x86)}\\Inno Setup 6\\iscc.exe`,
+          `${process.env["ProgramFiles(x86)"]}\\Inno Setup 6\\iscc.exe`,
           [options, `${workspacePath}\\${path}`],
           (execError, stdout, stderr) => {
             console.log(stdout);
