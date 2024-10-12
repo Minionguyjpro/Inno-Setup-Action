@@ -1,7 +1,7 @@
-// main.test.js
+// index.test.js
 const core = require("@actions/core");
 const fs = require("fs");
-const main = require("../src/main");
+const index = require("../src/index");
 
 // Mocking fs.promises for the test
 jest.mock("fs", () => {
@@ -25,7 +25,7 @@ describe("Inno Setup Action", () => {
 
   it("should execute Inno Setup command on Windows with existing workspace", () => {
     process.platform = "win32";
-    main();
+    index();
 
     expect(core.getInput).toHaveBeenCalledTimes(2);
     expect(fs.existsSync).toHaveBeenCalled();
