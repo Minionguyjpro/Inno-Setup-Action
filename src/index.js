@@ -12,7 +12,14 @@ let platformError;
 async function run() {
   try {
     if (process.platform === "win32") {
-      const workspaceExists = await fs.access(workspacePath).then(() => true).catch(() => false);
+      let workspaceExists;
+      try {
+        await fs.access(workspacePath);
+        workspaceExists = true;
+      } catch {
+        workspaceExists = false;
+      }
+      
       const workspaceNotEmpty = (await fs.readdir(workspacePath)).length > 0;
 
       if (workspaceExists && workspaceNotEmpty) {
