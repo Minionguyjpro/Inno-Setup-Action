@@ -19,7 +19,7 @@ async function run() {
       } catch {
         workspaceExists = false;
       }
-      
+
       const workspaceNotEmpty = (await fs.readdir(workspacePath)).length > 0;
 
       if (workspaceExists && workspaceNotEmpty) {
@@ -32,10 +32,12 @@ async function run() {
               core.setFailed(`Execution failed with error: ${stderr}`);
               process.exit(execError.code || 1);
             }
-          }
+          },
         );
       } else {
-        throw new Error("The repository was not cloned. Please specify the actions/checkout action before this step.");
+        throw new Error(
+          "The repository was not cloned. Please specify the actions/checkout action before this step.",
+        );
       }
     } else {
       throw new Error("This action is only supported on Windows!");
