@@ -1,55 +1,42 @@
-// Importing necessary modules
 const core = require("@actions/core");
-const fs = require("fs");
+const fs = require("fs").promises;
+const { execFile } = require("child_process");
 
-// Getting the path to the workspace from environment variables
 const workspacePath = process.env.GITHUB_WORKSPACE;
-
-// Getting inputs from the workflow
 const options = core.getInput("options");
 const path = core.getInput("path");
 
-// Importing the child_process module for executing shell commands
-const exec = require("child_process").exec;
-
-// Initializing error variables
 let repoError;
 let platformError;
 
-// Checking if the platform is Windows
-if (process.platform === "win32") {
-  // Checking if the GitHub workspace exists and is not empty
-  if (
-    fs.existsSync(process.env.GITHUB_WORKSPACE) &&
-    fs.readdirSync(workspacePath).length > 0
-  ) {
-    // Building and executing the Inno Setup compiler command
-    exec(
-      `"%PROGRAMFILES(X86)%\\Inno Setup 6\\iscc.exe" ${options} "${workspacePath}\\${path}"`,
-      { stdio: "ignore" },
-      function (execError, stdout, stderr) {
-        // Logging the standard output of the command
-        console.log(stdout);
+async function run() {
+  try {
+    if (process.platform === "win32") {
+      const workspaceExists = await fs.access(workspacePath).then(() => true).catch(() => false);
+      const workspaceNotEmpty = (await fs.readdir(workspacePath)).length > 0;
 
-        // Handling errors, if any
-        if (execError) {
-          repoError = { code: execError.code || 1 };
-          core.setFailed(stderr);
-          process.exit(repoError.code);
-        }
-      },
-    );
-  } else {
-    // Setting an error code and failing the workflow if the repository is not cloned
-    repoError = { code: 1 };
-    core.setFailed(
-      "The repository was not cloned. Please specify the actions/checkout action before this step.",
-    );
-    process.exit(repoError.code);
+      if (workspaceExists && workspaceNotEmpty) {
+        execFile(
+          `${process.env.ProgramFiles(x86)}\\Inno Setup 6\\iscc.exe`,
+          [options, `${workspacePath}\\${path}`],
+          (execError, stdout, stderr) => {
+            console.log(stdout);
+            if (execError) {
+              core.setFailed(`Execution failed with error: ${stderr}`);
+              process.exit(execError.code || 1);
+            }
+          }
+        );
+      } else {
+        throw new Error("The repository was not cloned. Please specify the actions/checkout action before this step.");
+      }
+    } else {
+      throw new Error("This action is only supported on Windows!");
+    }
+  } catch (error) {
+    core.setFailed(error.message);
+    process.exit(1);
   }
-} else {
-  // Setting an error code and failing the workflow if the platform is not Windows
-  platformError = { code: 1 };
-  core.setFailed("This action is only supported on Windows!");
-  process.exit(platformError.code);
 }
+
+run();
