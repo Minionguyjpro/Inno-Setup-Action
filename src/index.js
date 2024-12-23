@@ -25,7 +25,7 @@ async function run() {
       if (workspaceExists && workspaceNotEmpty) {
         // Escaping quotes in the options array
         const escapedOptions = options.map((str) =>
-          str.replace(/(["'])/g, '$1'));
+          str.replace(/(["'])/g, '$1'))
         );
 
         execFile(
