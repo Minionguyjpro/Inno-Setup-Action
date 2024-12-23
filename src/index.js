@@ -3,7 +3,7 @@ const fs = require("fs").promises;
 const { execFile } = require("child_process");
 
 const workspacePath = process.env.GITHUB_WORKSPACE;
-const options = core.getMultilineInput("options").join(" ");
+const options = core.getMultilineInput("options");
 const path = core.getInput("path");
 
 let repoError;
@@ -25,7 +25,7 @@ async function run() {
       if (workspaceExists && workspaceNotEmpty) {
         execFile(
           `${process.env["ProgramFiles(x86)"]}\\Inno Setup 6\\iscc.exe`,
-          [options, `${workspacePath}\\${path}`],
+          [...options, `${workspacePath}\\${path}`],
           (execError, stdout, stderr) => {
             console.log(stdout);
             if (execError) {
