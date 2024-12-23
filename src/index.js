@@ -23,21 +23,17 @@ async function run() {
       const workspaceNotEmpty = (await fs.readdir(workspacePath)).length > 0;
 
       if (workspaceExists && workspaceNotEmpty) {
-        // Capture the entire command as a string
-        const command = `${process.env["ProgramFiles(x86)"]}\\Inno Setup 6\\iscc.exe`;
-        const commandArgs = [...options, `${workspacePath}\\${path}`];
-        const fullCommand = `${command} ${commandArgs.join(" ")}`;
-
-        // Log the full command being executed
-        console.log(`Executing command: ${fullCommand}`);
-
-        execFile(command, commandArgs, (execError, stdout, stderr) => {
-          console.log(stdout);
-          if (execError) {
-            core.setFailed(`Execution failed with error: ${stderr}`);
-            process.exit(execError.code || 1);
-          }
-        });
+        execFile(
+          `${process.env["ProgramFiles(x86)"]}\\Inno Setup 6\\iscc.exe`,
+          [...options, `${workspacePath}\\${path}`],
+          (execError, stdout, stderr) => {
+            console.log(stdout);
+            if (execError) {
+              core.setFailed(`Execution failed with error: ${stderr}`);
+              process.exit(execError.code || 1);
+            }
+          },
+        );
       } else {
         throw new Error(
           "The repository was not cloned. Please specify the actions/checkout action before this step.",
