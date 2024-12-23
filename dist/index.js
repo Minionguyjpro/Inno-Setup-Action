@@ -27310,7 +27310,7 @@ const fs = (__nccwpck_require__(9896).promises);
 const { execFile } = __nccwpck_require__(5317);
 
 const workspacePath = process.env.GITHUB_WORKSPACE;
-const options = core.getMultilineInput("options").join(" ");
+const options = core.getMultilineInput("options");
 const path = core.getInput("path");
 
 let repoError;
@@ -27332,7 +27332,7 @@ async function run() {
       if (workspaceExists && workspaceNotEmpty) {
         execFile(
           `${process.env["ProgramFiles(x86)"]}\\Inno Setup 6\\iscc.exe`,
-          [options, `${workspacePath}\\${path}`],
+          [...options, `${workspacePath}\\${path}`],
           (execError, stdout, stderr) => {
             console.log(stdout);
             if (execError) {
