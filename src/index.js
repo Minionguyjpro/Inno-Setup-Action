@@ -6,6 +6,10 @@ const workspacePath = process.env.GITHUB_WORKSPACE;
 const options = core.getMultilineInput("options");
 const path = core.getInput("path");
 
+const sanitizeArgument = (arg) => {
+  return arg.replace(/\\"/g, '"');
+};
+
 let repoError;
 let platformError;
 
@@ -23,9 +27,11 @@ async function run() {
       const workspaceNotEmpty = (await fs.readdir(workspacePath)).length > 0;
 
       if (workspaceExists && workspaceNotEmpty) {
+        const sanitizedOptions = options.map(sanitizeArgument);
+
         execFile(
           `${process.env["ProgramFiles(x86)"]}\\Inno Setup 6\\iscc.exe`,
-          [...options, `${workspacePath}\\${path}`],
+          [...sanitizedOptions, `${workspacePath}\\${path}`],
           (execError, stdout, stderr) => {
             console.log(stdout);
             if (execError) {
