@@ -27310,7 +27310,7 @@ const fs = (__nccwpck_require__(9896).promises);
 const { execFile } = __nccwpck_require__(5317);
 
 const workspacePath = process.env.GITHUB_WORKSPACE;
-const options = core.getMultilineInput("options");
+const options = core.getMultilineInput("options").join(" ");
 const path = core.getInput("path");
 
 let repoError;

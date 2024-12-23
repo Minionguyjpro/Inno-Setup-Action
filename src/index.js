@@ -3,7 +3,7 @@ const fs = require("fs").promises;
 const { execFile } = require("child_process");
 
 const workspacePath = process.env.GITHUB_WORKSPACE;
-const options = core.getMultilineInput("options").join(' ');
+const options = core.getMultilineInput("options").join(" ");
 const path = core.getInput("path");
 
 let repoError;
