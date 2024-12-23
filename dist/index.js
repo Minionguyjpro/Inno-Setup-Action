@@ -27331,20 +27331,15 @@ async function run() {
       const workspaceNotEmpty = (await fs.readdir(workspacePath)).length > 0;
 
       if (workspaceExists && workspaceNotEmpty) {
-        // Escaping quotes in the options array
         const escapedOptions = options.map((str) =>
-          str.replace(/(["'])/g, "\\$1"),
+          str.replace(/(["'])/g, "$1"),
         );
-
-        // Debugging output to check the escaped options
-        console.log("Escaped Options:", escapedOptions);
 
         execFile(
           `${process.env["ProgramFiles(x86)"]}\\Inno Setup 6\\iscc.exe`,
           [...escapedOptions, `${workspacePath}\\${path}`],
           (execError, stdout, stderr) => {
-            console.log("stdout:", stdout);
-            console.log("stderr:", stderr);
+            console.log(stdout, stderr);
             if (execError) {
               core.setFailed(`Execution failed with error: ${stderr}`);
               process.exit(execError.code || 1);

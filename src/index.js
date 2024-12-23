@@ -23,8 +23,9 @@ async function run() {
       const workspaceNotEmpty = (await fs.readdir(workspacePath)).length > 0;
 
       if (workspaceExists && workspaceNotEmpty) {
-
-        const escapedOptions = options.map(str => str.replace(/(["'])/g, '$1'));
+        const escapedOptions = options.map((str) =>
+          str.replace(/(["'])/g, "$1"),
+        );
 
         execFile(
           `${process.env["ProgramFiles(x86)"]}\\Inno Setup 6\\iscc.exe`,
