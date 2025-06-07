@@ -13,10 +13,12 @@ const __dirname = path.dirname(__filename);
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
+  resolvePluginsRelativeTo: __dirname,
 });
 
 export default [
-  ...compat.extends("prettier"),
+  // Convert legacy configs
+  ...compat.extends("eslint:recommended", "prettier"),
 
   {
     files: ["**/*.js", "**/*.mjs", "**/*.cjs"],
