@@ -22,13 +22,13 @@
     ".": "./dist/index.js"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=21"
   },
   "scripts": {
     "bundle": "npm run format:write && npm run package",
     "format:write": "prettier --write **/*.js",
     "format:check": "prettier --check **/*.js",
-    "lint": "npx eslint . -c ./.github/linters/.eslintrc.yml",
+    "lint": "npx eslint . -c ./.github/linters/eslint.config.js",
     "package": "ncc build src/index.js --license licenses.txt",
     "package:watch": "npm run package -- --watch",
     "test": "jest",
@@ -36,7 +36,7 @@
   },
   "license": "MIT",
   "eslintConfig": {
-    "extends": "./.github/linters/.eslintrc.yml"
+    "extends": "./.github/linters/eslint.config.js"
   },
   "jest": {
     "verbose": true,
