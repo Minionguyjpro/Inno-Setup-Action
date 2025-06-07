@@ -67,19 +67,19 @@
     "@actions/core": "^1.11.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
-    "@babel/eslint-parser": "^7.25.9",
-    "@babel/preset-env": "^7.26.0",
-    "@semantic-release/exec": "^6.0.3",
+    "@babel/core": "^7.27.4",
+    "@babel/eslint-parser": "^7.27.5",
+    "@babel/preset-env": "^7.27.2",
+    "@semantic-release/exec": "^7.1.0",
     "@semantic-release/git": "^10.0.1",
     "@vercel/ncc": "^0.38.3",
     "babel-preset-jest": "^29.6.3",
     "eslint": "^9.28.0",
     "eslint-plugin-github": "^6.0.0",
-    "eslint-plugin-jest": "^28.8.3",
+    "eslint-plugin-jest": "^28.13.0",
     "jest": "^29.7.0",
     "prettier": "^3.5.3",
-    "semantic-release": "^24.2.0"
+    "semantic-release": "^24.2.5"
   },
   "release": {
     "branches": "main",
