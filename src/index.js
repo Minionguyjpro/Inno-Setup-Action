@@ -1,6 +1,6 @@
-const core = require("@actions/core");
-const fs = require("fs").promises;
-const { execFile } = require("child_process");
+import * as core from "@actions/core";
+import { promises as fs } from "fs";
+import { execFile } from "child_process";
 
 const workspacePath = process.env.GITHUB_WORKSPACE;
 const options = core.getMultilineInput("options");
