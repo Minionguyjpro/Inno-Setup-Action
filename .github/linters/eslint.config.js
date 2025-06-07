@@ -23,16 +23,6 @@ export default [
         SharedArrayBuffer: "readonly",
       },
       parser: babelParser,
-      parserOptions: {
-        ecmaVersion: 2023,
-        sourceType: "module",
-        requireConfigFile: false,
-        babelOptions: {
-          babelrc: false,
-          configFile: false,
-          presets: ["jest"],
-        },
-      },
     },
     plugins: {
       github,
