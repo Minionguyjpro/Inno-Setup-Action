@@ -3,6 +3,7 @@
   "description": "GitHub action to compile .iss (Inno Setup Script) files.",
   "version": "1.2.5",
   "author": "Minionguyjpro",
+  "type": "module",
   "private": false,
   "homepage": "https://github.com/Minionguyjpro/Inno-Setup-Action#readme",
   "repository": {
