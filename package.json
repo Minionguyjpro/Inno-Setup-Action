@@ -64,7 +64,8 @@
     ]
   },
   "dependencies": {
-    "@actions/core": "^1.11.1"
+    "@actions/core": "^1.11.1",
+    "eslintrc": "^1.0.6"
   },
   "devDependencies": {
     "@babel/core": "^7.27.4",
