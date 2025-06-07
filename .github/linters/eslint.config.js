@@ -20,7 +20,7 @@ const compat = new FlatCompat({
 // ESLint flat config expects an array of config objects
 export default [
   // FlatCompat usage to extend from old-style configs, if needed
-  ...compat.extends("@actions/core"),
+  ...compat.extends("eslint:recommended"),
 
   // Direct flat config for your JS files
   {
