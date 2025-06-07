@@ -18,7 +18,7 @@ const compat = new FlatCompat({
 
 export default [
   // Convert legacy configs
-  ...compat.extends("eslint:recommended", "prettier"),
+  ...compat.extends("eslint", "prettier"),
 
   {
     files: ["**/*.js", "**/*.mjs", "**/*.cjs"],
