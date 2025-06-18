@@ -1,7 +1,7 @@
 {
   "name": "inno-setup-action",
   "description": "GitHub action to compile .iss (Inno Setup Script) files.",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "author": "Minionguyjpro",
   "type": "module",
   "private": false,
