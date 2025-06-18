@@ -29,16 +29,13 @@
     "bundle": "npm run format:write && npm run package",
     "format:write": "prettier --write **/*.js",
     "format:check": "prettier --check **/*.js",
-    "lint": "npx eslint . -c ./.github/linters/eslint.config.js",
+    "lint": "eslint src/**/*.js",
     "package": "ncc build src/index.js --license licenses.txt",
     "package:watch": "npm run package -- --watch",
     "test": "jest",
     "all": "npm run format:write && npm run lint && npm run package"
   },
   "license": "MIT",
-  "eslintConfig": {
-    "extends": "./.github/linters/eslint.config.js"
-  },
   "jest": {
     "verbose": true,
     "clearMocks": true,

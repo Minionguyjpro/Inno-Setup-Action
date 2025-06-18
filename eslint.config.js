@@ -2,24 +2,16 @@ import { FlatCompat } from "@eslint/eslintrc";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import js from "@eslint/js";
 import github from "eslint-plugin-github";
 import jest from "eslint-plugin-jest";
 import babelParser from "@babel/eslint-parser";
 import prettier from "eslint-plugin-prettier";
+import importPlugin from "eslint-plugin-import";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  resolvePluginsRelativeTo: __dirname,
-});
-
 export default [
-  // Convert legacy configs
-  ...compat.extends("prettier"),
-
   {
     files: ["**/*.js", "**/*.mjs", "**/*.cjs"],
     ignores: [
@@ -48,6 +40,7 @@ export default [
       github,
       jest,
       prettier,
+      import: importPlugin,
     },
     rules: {
       camelcase: "off",
@@ -62,8 +55,4 @@ export default [
       semi: "off",
     },
   },
-
-  js.configs.recommended,
-  github.configs.recommended,
-  jest.configs.recommended,
 ];

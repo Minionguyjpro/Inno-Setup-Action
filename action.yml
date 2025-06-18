@@ -14,5 +14,5 @@ inputs:
     required: false
     
 runs:
-  using: 'node20'
+  using: 'node21'
   main: 'dist/index.js'
