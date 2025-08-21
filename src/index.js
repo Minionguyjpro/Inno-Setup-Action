@@ -1,34 +1,10 @@
-const core = require("@actions/core");
-const { promises: fs } = require("fs");
-const { exec, execFile } = require("child_process");
+import * as core from "@actions/core";
+import { promises as fs } from "fs";
+import { exec, execFile } from "child_process";
+import { promisify } from "util";
 
-function execPromise(command) {
-  return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
-      console.log(stdout);
-      console.error(stderr);
-      if (error) {
-        reject(new Error(`Command failed: ${stderr}`));
-      } else {
-        resolve(stdout);
-      }
-    });
-  });
-}
-
-function execFilePromise(file, args) {
-  return new Promise((resolve, reject) => {
-    execFile(file, args, (error, stdout, stderr) => {
-      console.log(stdout);
-      console.error(stderr);
-      if (error) {
-        reject(new Error(`Execution failed: ${stderr}`));
-      } else {
-        resolve(stdout);
-      }
-    });
-  });
-}
+const execPromise = promisify(exec);
+const execFilePromise = promisify(execFile);
 
 const workspacePath = process.env.GITHUB_WORKSPACE;
 const options = core.getMultilineInput("options");
@@ -60,14 +36,30 @@ async function run() {
     const escapedOptions = options.map((str) => str.replace(/(["'])/g, "$1"));
 
     // Install Inno Setup silently
-    await execPromise(
-      `winget install --id JRSoftware.InnoSetup -e -s winget -h`
-    );
+    try {
+      const { stdout, stderr } = await execPromise(
+        `winget install --id JRSoftware.InnoSetup -e -s winget -h`
+      );
+      console.log(stdout);
+      console.error(stderr);
+    } catch (err) {
+      throw new Error(`Failed to install Inno Setup: ${err.stderr || err.message}`);
+    }
 
+    // Run Inno Setup Compiler
     const isccPath = `${process.env["ProgramFiles(x86)"]}\\Inno Setup 6\\iscc.exe`;
     const scriptPath = `${workspacePath}\\${path}`;
 
-    await execFilePromise(isccPath, [...escapedOptions, scriptPath]);
+    try {
+      const { stdout, stderr } = await execFilePromise(isccPath, [
+        ...escapedOptions,
+        scriptPath,
+      ]);
+      console.log(stdout);
+      console.error(stderr);
+    } catch (err) {
+      throw new Error(`Execution failed: ${err.stderr || err.message}`);
+    }
 
     console.log("Inno Setup script compiled successfully.");
   } catch (error) {
