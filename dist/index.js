@@ -27431,6 +27431,7 @@ var __webpack_exports__ = {};
 
 
 
+
 const workspacePath = process.env.GITHUB_WORKSPACE;
 const options = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getMultilineInput("options");
 const path = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("path");
@@ -27454,6 +27455,17 @@ async function run() {
       if (workspaceExists && workspaceNotEmpty) {
         const escapedOptions = options.map((str) =>
           str.replace(/(["'])/g, "$1"),
+        );
+
+        (0,child_process__WEBPACK_IMPORTED_MODULE_2__.exec)(
+          `winget install --id JRSoftware.InnoSetup -e -s winget -h`,
+          (execError, stdout, stderr) => {
+            console.log(stdout, stderr);
+            if (execError) {
+              _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(`Failed to install Inno Setup: ${stderr}`);
+              process.exit(execError.code || 1);
+            }
+          },
         );
 
         (0,child_process__WEBPACK_IMPORTED_MODULE_2__.execFile)(
