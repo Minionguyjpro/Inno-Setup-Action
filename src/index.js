@@ -29,7 +29,7 @@ async function run() {
     const files = await fs.readdir(workspacePath);
     if (files.length === 0) {
       throw new Error(
-        "The repository was not cloned. Please specify the actions/checkout action before this step."
+        "The repository was not cloned. Please specify the actions/checkout action before this step.",
       );
     }
 
@@ -37,13 +37,13 @@ async function run() {
 
     // Install Inno Setup silently
     try {
-      const { stdout, stderr } = await execPromise(
-        `choco install innosetup`
-      );
+      const { stdout, stderr } = await execPromise(`choco install innosetup`);
       console.log(stdout);
       console.error(stderr);
     } catch (err) {
-      throw new Error(`Failed to install Inno Setup: ${err.stderr || err.message}`);
+      throw new Error(
+        `Failed to install Inno Setup: ${err.stderr || err.message}`,
+      );
     }
 
     // Run Inno Setup Compiler

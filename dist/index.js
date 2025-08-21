@@ -27467,9 +27467,7 @@ async function run() {
 
     // Install Inno Setup silently
     try {
-      const { stdout, stderr } = await execPromise(
-        `winget install --id JRSoftware.InnoSetup -e -s winget -h`,
-      );
+      const { stdout, stderr } = await execPromise(`choco install innosetup`);
       console.log(stdout);
       console.error(stderr);
     } catch (err) {
