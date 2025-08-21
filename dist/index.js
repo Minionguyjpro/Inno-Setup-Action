@@ -27427,68 +27427,75 @@ var __webpack_exports__ = {};
 /* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(7484);
 /* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(9896);
 /* harmony import */ var child_process__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(5317);
+/* harmony import */ var util__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(9023);
 
 
 
 
+
+const execPromise = (0,util__WEBPACK_IMPORTED_MODULE_3__.promisify)(child_process__WEBPACK_IMPORTED_MODULE_2__.exec);
+const execFilePromise = (0,util__WEBPACK_IMPORTED_MODULE_3__.promisify)(child_process__WEBPACK_IMPORTED_MODULE_2__.execFile);
 
 const workspacePath = process.env.GITHUB_WORKSPACE;
 const options = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getMultilineInput("options");
 const path = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("path");
 
-let repoError;
-let platformError;
-
 async function run() {
   try {
-    if (process.platform === "win32") {
-      let workspaceExists;
-      try {
-        await fs__WEBPACK_IMPORTED_MODULE_1__.promises.access(workspacePath);
-        workspaceExists = true;
-      } catch {
-        workspaceExists = false;
-      }
-
-      const workspaceNotEmpty = (await fs__WEBPACK_IMPORTED_MODULE_1__.promises.readdir(workspacePath)).length > 0;
-
-      if (workspaceExists && workspaceNotEmpty) {
-        const escapedOptions = options.map((str) =>
-          str.replace(/(["'])/g, "$1"),
-        );
-
-        (0,child_process__WEBPACK_IMPORTED_MODULE_2__.exec)(
-          `winget install --id JRSoftware.InnoSetup -e -s winget -h`,
-          (execError, stdout, stderr) => {
-            console.log(stdout, stderr);
-            if (execError) {
-              _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(`Failed to install Inno Setup: ${stderr}`);
-              process.exit(execError.code || 1);
-            }
-          },
-        );
-
-        (0,child_process__WEBPACK_IMPORTED_MODULE_2__.execFile)(
-          `${process.env["ProgramFiles(x86)"]}\\Inno Setup 6\\iscc.exe`,
-          [...escapedOptions, `${workspacePath}\\${path}`],
-          (execError, stdout, stderr) => {
-            console.log(stdout, stderr);
-            if (execError) {
-              _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(`Execution failed with error: ${stderr}`);
-              process.exit(execError.code || 1);
-            }
-          },
-        );
-      } else {
-        throw new Error(
-          "The repository was not cloned. Please specify the actions/checkout action before this step.",
-        );
-      }
-    } else {
+    if (process.platform !== "win32") {
       throw new Error("This action is only supported on Windows!");
     }
+
+    if (!workspacePath) {
+      throw new Error("GITHUB_WORKSPACE is not defined.");
+    }
+
+    try {
+      await fs__WEBPACK_IMPORTED_MODULE_1__.promises.access(workspacePath);
+    } catch {
+      throw new Error("Workspace path does not exist.");
+    }
+
+    const files = await fs__WEBPACK_IMPORTED_MODULE_1__.promises.readdir(workspacePath);
+    if (files.length === 0) {
+      throw new Error(
+        "The repository was not cloned. Please specify the actions/checkout action before this step.",
+      );
+    }
+
+    const escapedOptions = options.map((str) => str.replace(/(["'])/g, "$1"));
+
+    // Install Inno Setup silently
+    try {
+      const { stdout, stderr } = await execPromise(
+        `winget install --id JRSoftware.InnoSetup -e -s winget -h`,
+      );
+      console.log(stdout);
+      console.error(stderr);
+    } catch (err) {
+      throw new Error(
+        `Failed to install Inno Setup: ${err.stderr || err.message}`,
+      );
+    }
+
+    // Run Inno Setup Compiler
+    const isccPath = `${process.env["ProgramFiles(x86)"]}\\Inno Setup 6\\iscc.exe`;
+    const scriptPath = `${workspacePath}\\${path}`;
+
+    try {
+      const { stdout, stderr } = await execFilePromise(isccPath, [
+        ...escapedOptions,
+        scriptPath,
+      ]);
+      console.log(stdout);
+      console.error(stderr);
+    } catch (err) {
+      throw new Error(`Execution failed: ${err.stderr || err.message}`);
+    }
+
+    console.log("Inno Setup script compiled successfully.");
   } catch (error) {
-    _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(error.message);
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(error.message || "An unknown error occurred.");
     process.exit(1);
   }
 }
