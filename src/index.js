@@ -1,5 +1,6 @@
 import * as core from "@actions/core";
 import { promises as fs } from "fs";
+import { exec } from "child_process";
 import { execFile } from "child_process";
 
 const workspacePath = process.env.GITHUB_WORKSPACE;
@@ -25,6 +26,17 @@ async function run() {
       if (workspaceExists && workspaceNotEmpty) {
         const escapedOptions = options.map((str) =>
           str.replace(/(["'])/g, "$1"),
+        );
+
+        exec(
+          `winget install --id JRSoftware.InnoSetup -e -s winget -h`,
+          (execError, stdout, stderr) => {
+            console.log(stdout,stderr);
+            if (execError) {
+              core.setFailed(`Failed to install Inno Setup: ${stderr}`);
+              process.exit(execError.code || 1);
+            }
+          },
         );
 
         execFile(
