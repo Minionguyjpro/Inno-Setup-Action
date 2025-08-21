@@ -1,5 +1,5 @@
 # Inno-Setup-Action
-GitHub action to compile .iss (Inno Setup Script) files.
+GitHub action to compile .iss (Inno Setup Script) files, to build your own application installers through GitHub Actions.
 ### Example Usage
 Make for example the file ``/.github/workflows/build.yml`` with the following contents:
 ```yml
