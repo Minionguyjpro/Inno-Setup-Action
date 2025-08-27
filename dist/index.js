@@ -27468,7 +27468,6 @@ async function run() {
     // Install Inno Setup silently
     try {
       const { stdout, stderr } = await execPromise(`choco install innosetup`);
-      console.log(stdout);
       console.error(stderr);
     } catch (err) {
       throw new Error(
