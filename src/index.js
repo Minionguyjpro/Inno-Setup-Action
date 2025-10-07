@@ -51,8 +51,8 @@ async function run() {
 
     try {
       const { stdout, stderr } = await execFilePromise(isccPath, [
-        ...escapedOptions,
         scriptPath,
+        ...escapedOptions,
       ]);
       console.log(stdout);
       console.error(stderr);
