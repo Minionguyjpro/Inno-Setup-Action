@@ -27440,8 +27440,7 @@ var __webpack_exports__ = {};
 
 
 
-const execPromise = (0,util__WEBPACK_IMPORTED_MODULE_3__.promisify)(child_process__WEBPACK_IMPORTED_MODULE_2__.exec);
-const execFilePromise = (0,util__WEBPACK_IMPORTED_MODULE_3__.promisify)(child_process__WEBPACK_IMPORTED_MODULE_2__.execFile);
+
 
 const workspacePath = process.env.GITHUB_WORKSPACE;
 const options = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getMultilineInput("options");
@@ -27451,6 +27450,26 @@ const installLatest =
 const installerUrl =
   _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("installer_url") ||
   "https://jrsoftware.org/download.php/is.exe?site=1";
+
+function spawnPromise(command, args = [], options = {}) {
+  return new Promise((resolve, reject) => {
+    const child = (0,child_process__WEBPACK_IMPORTED_MODULE_2__.spawn)(command, args, {
+      shell: false,
+      stdio: "inherit",
+      ...options,
+    });
+
+    child.on("error", reject);
+
+    child.on("close", (code) => {
+      if (code !== 0) {
+        reject(new Error(`${command} exited with code ${code}`));
+      } else {
+        resolve();
+      }
+    });
+  });
+}
 
 async function run() {
   try {
@@ -27535,7 +27554,7 @@ async function run() {
 
       // Fallback to 'where' to see if it's on PATH
       try {
-        const { stdout } = await execPromise("where iscc.exe");
+        const { stdout } = await spawnPromise("where", ["iscc.exe"], { shell: true });
         const line = stdout.split(/\r?\n/).find(Boolean);
         if (line) return line.trim();
       } catch (e) {
@@ -27552,21 +27571,24 @@ async function run() {
         `inno-setup-installer-${Date.now()}.exe`,
       );
       try {
-        _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Downloading Inno Setup from ${installerUrl} ...`);
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Downloading Inno Setup from ${installerUrl}…`);
         await downloadFile(installerUrl, tmpExe);
         _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Running installer silently: ${tmpExe}`);
-        await execFilePromise(tmpExe, [
+        await spawnPromise(tmpExe, [
           "/VERYSILENT",
           "/SUPPRESSMSGBOXES",
           "/NORESTART",
           "/SP-",
         ]);
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Done installing`);
       } catch (err) {
         _actions_core__WEBPACK_IMPORTED_MODULE_0__.warning(
           `Download/install failed: ${err.message}. Falling back to Chocolatey.`,
         );
         try {
-          await execPromise(`choco install innosetup -y`);
+          _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Installing Inno Setup via choco…`);
+          await spawnPromise("choco", ["install", "innosetup", "-y"]);
+          _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Installed.`);
         } catch (err2) {
           throw new Error(
             `Failed to install Inno Setup: ${err2.stderr || err2.message}`,
@@ -27575,7 +27597,9 @@ async function run() {
       }
     } else {
       try {
-        await execPromise(`choco install innosetup -y`);
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Installing Inno Setup via choco…`);
+        await spawnPromise("choco", ["install", "innosetup", "-y"]);
+          _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Installed.`);
       } catch (err) {
         throw new Error(
           `Failed to install Inno Setup: ${err.stderr || err.message}`,
@@ -27592,12 +27616,11 @@ async function run() {
     const scriptPath = path__WEBPACK_IMPORTED_MODULE_6__.join(workspacePath, scriptInput);
 
     try {
-      const { stdout, stderr } = await execFilePromise(isccPath, [
+      _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Running iscc…`);
+      await spawnPromise(isccPath, [
         scriptPath,
         ...escapedOptions,
       ]);
-      if (stdout) console.log(stdout);
-      if (stderr) console.error(stderr);
     } catch (err) {
       throw new Error(`Execution failed: ${err.stderr || err.message}`);
     }
@@ -27605,7 +27628,6 @@ async function run() {
     console.log("Inno Setup script compiled successfully.");
   } catch (error) {
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(error.message || "An unknown error occurred.");
-    process.exit(1);
   }
 }
 
