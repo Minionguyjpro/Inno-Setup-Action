@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Compile .ISS to .EXE Installer
-        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        uses: C0rn3j/Inno-Setup-Action@v1.2.8
         with:
           path: src/setup.iss
           options: /O+
@@ -23,5 +23,5 @@ The action will tell you it saved the file somewhere around in ``D:\YOURREPONAME
 ---
 | **Key Name** | **Required** | **Example**        | **Default Value** | **Description**
 |--------------|--------------|--------------------|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-| ``path``     | Yes          | ``src/setup.iss``  | N/A               | Path to input .iss script file.                                                                                                     
+| ``path``     | Yes          | ``src/setup.iss``  | N/A               | Path to input .iss script file.
 | ``options``  | No           | ``/O+``            | N/A               | Extra arguments/options to include. Include the slashes for them. See [this page](https://jrsoftware.org/ishelp/index.php?topic=compilercmdline) for more information.                                                                                                                                  |
