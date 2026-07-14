@@ -27441,7 +27441,6 @@ var __webpack_exports__ = {};
 
 
 
-
 const workspacePath = process.env.GITHUB_WORKSPACE;
 const options = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getMultilineInput("options");
 const scriptInput = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("path");
@@ -27554,7 +27553,9 @@ async function run() {
 
       // Fallback to 'where' to see if it's on PATH
       try {
-        const { stdout } = await spawnPromise("where", ["iscc.exe"], { shell: true });
+        const { stdout } = await spawnPromise("where", ["iscc.exe"], {
+          shell: true,
+        });
         const line = stdout.split(/\r?\n/).find(Boolean);
         if (line) return line.trim();
       } catch (e) {
@@ -27599,7 +27600,7 @@ async function run() {
       try {
         _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Installing Inno Setup via choco…`);
         await spawnPromise("choco", ["install", "innosetup", "-y"]);
-          _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Installed.`);
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Installed.`);
       } catch (err) {
         throw new Error(
           `Failed to install Inno Setup: ${err.stderr || err.message}`,
@@ -27617,10 +27618,7 @@ async function run() {
 
     try {
       _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Running iscc…`);
-      await spawnPromise(isccPath, [
-        scriptPath,
-        ...escapedOptions,
-      ]);
+      await spawnPromise(isccPath, [scriptPath, ...escapedOptions]);
     } catch (err) {
       throw new Error(`Execution failed: ${err.stderr || err.message}`);
     }
