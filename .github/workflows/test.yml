@@ -35,7 +35,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
 
       - name: Commit and Push Changes (upstream)
-        uses: devops-infra/action-commit-push@master
+        uses: devops-infra/action-commit-push@v1.5.0
         with:
           github_token: "${{ secrets.GITHUB_TOKEN }}"
           commit_prefix: "[AUTO]"
