@@ -1,5 +1,5 @@
 name: 'Inno Setup Action'
-author: 'Minionguyjpro'
+author: 'C0rn3j'
 branding:
   icon: 'box'
   color: 'green'
@@ -20,7 +20,7 @@ inputs:
     description: 'URL to download the Inno Setup installer (can be overridden).'
     required: false
     default: 'https://jrsoftware.org/download.php/is.exe?site=1'
-    
+
 runs:
   using: 'node24'
   main: 'dist/index.js'
