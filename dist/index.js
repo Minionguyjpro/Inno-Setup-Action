@@ -27440,17 +27440,35 @@ var __webpack_exports__ = {};
 
 
 
-const execPromise = (0,util__WEBPACK_IMPORTED_MODULE_3__.promisify)(child_process__WEBPACK_IMPORTED_MODULE_2__.exec);
-const execFilePromise = (0,util__WEBPACK_IMPORTED_MODULE_3__.promisify)(child_process__WEBPACK_IMPORTED_MODULE_2__.execFile);
 
 const workspacePath = process.env.GITHUB_WORKSPACE;
 const options = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getMultilineInput("options");
 const scriptInput = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("path");
 const installLatest =
   (_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("install_latest") || "false").toLowerCase() === "true";
-const installerUrl =
-  _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("installer_url") ||
-  "https://jrsoftware.org/download.php/is.exe?site=1";
+const installerUrl = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("installer_url");
+const latestReleaseApiUrl =
+  "https://api.github.com/repos/jrsoftware/issrc/releases/latest";
+
+function spawnPromise(command, args = [], options = {}) {
+  return new Promise((resolve, reject) => {
+    const child = (0,child_process__WEBPACK_IMPORTED_MODULE_2__.spawn)(command, args, {
+      shell: false,
+      stdio: "inherit",
+      ...options,
+    });
+
+    child.on("error", reject);
+
+    child.on("close", (code) => {
+      if (code !== 0) {
+        reject(new Error(`${command} exited with code ${code}`));
+      } else {
+        resolve();
+      }
+    });
+  });
+}
 
 async function run() {
   try {
@@ -27485,27 +27503,87 @@ async function run() {
             return reject(
               new Error("Too many redirects while downloading installer"),
             );
-          https__WEBPACK_IMPORTED_MODULE_4__.get(u, (res) => {
-              if (
-                res.statusCode >= 300 &&
-                res.statusCode < 400 &&
-                res.headers.location
-              ) {
-                return getUrl(res.headers.location, redirects + 1);
-              }
-              if (res.statusCode !== 200) {
-                return reject(
-                  new Error(`Download failed with status ${res.statusCode}`),
-                );
-              }
-              const file = (0,fs__WEBPACK_IMPORTED_MODULE_1__.createWriteStream)(dest);
-              res.pipe(file);
-              file.on("finish", () => file.close(resolve));
-              file.on("error", reject);
-            })
-            .on("error", reject);
+          try {
+            https__WEBPACK_IMPORTED_MODULE_4__.get(u, (res) => {
+                if (
+                  res.statusCode >= 300 &&
+                  res.statusCode < 400 &&
+                  res.headers.location
+                ) {
+                  res.resume();
+                  return getUrl(
+                    new URL(res.headers.location, u),
+                    redirects + 1,
+                  );
+                }
+                if (res.statusCode !== 200) {
+                  return reject(
+                    new Error(`Download failed with status ${res.statusCode}`),
+                  );
+                }
+                const file = (0,fs__WEBPACK_IMPORTED_MODULE_1__.createWriteStream)(dest);
+                res.pipe(file);
+                file.on("finish", () => file.close(resolve));
+                file.on("error", reject);
+              })
+              .on("error", reject);
+          } catch (error) {
+            reject(error);
+          }
         }
         getUrl(url, 0);
+      });
+    }
+
+    async function getLatestInstallerUrl() {
+      return new Promise((resolve, reject) => {
+        const request = https__WEBPACK_IMPORTED_MODULE_4__.get(
+          latestReleaseApiUrl,
+          {
+            headers: {
+              Accept: "application/vnd.github+json",
+              "User-Agent": "Inno-Setup-Action",
+              "X-GitHub-Api-Version": "2026-03-10",
+            },
+          },
+          (res) => {
+            let body = "";
+
+            res.setEncoding("utf8");
+            res.on("data", (chunk) => {
+              body += chunk;
+            });
+            res.on("end", () => {
+              if (res.statusCode !== 200) {
+                reject(
+                  new Error(
+                    `Latest release lookup failed with status ${res.statusCode}`,
+                  ),
+                );
+                return;
+              }
+
+              try {
+                const release = JSON.parse(body);
+                const installer = release.assets?.find((asset) =>
+                  /^innosetup-.*-x64\.exe$/i.test(asset.name),
+                );
+
+                if (!installer?.browser_download_url) {
+                  throw new Error(
+                    "Latest release does not contain an x64 installer asset",
+                  );
+                }
+
+                resolve(installer.browser_download_url);
+              } catch (error) {
+                reject(error);
+              }
+            });
+          },
+        );
+
+        request.on("error", reject);
       });
     }
 
@@ -27535,7 +27613,9 @@ async function run() {
 
       // Fallback to 'where' to see if it's on PATH
       try {
-        const { stdout } = await execPromise("where iscc.exe");
+        const { stdout } = await spawnPromise("where", ["iscc.exe"], {
+          shell: true,
+        });
         const line = stdout.split(/\r?\n/).find(Boolean);
         if (line) return line.trim();
       } catch (e) {
@@ -27552,21 +27632,27 @@ async function run() {
         `inno-setup-installer-${Date.now()}.exe`,
       );
       try {
-        _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Downloading Inno Setup from ${installerUrl} ...`);
-        await downloadFile(installerUrl, tmpExe);
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Getting Inno Setup URL…`);
+        const resolvedInstallerUrl =
+          installerUrl || (await getLatestInstallerUrl());
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Downloading Inno Setup from ${resolvedInstallerUrl}…`);
+        await downloadFile(resolvedInstallerUrl, tmpExe);
         _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Running installer silently: ${tmpExe}`);
-        await execFilePromise(tmpExe, [
+        await spawnPromise(tmpExe, [
           "/VERYSILENT",
           "/SUPPRESSMSGBOXES",
           "/NORESTART",
           "/SP-",
         ]);
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Done installing`);
       } catch (err) {
         _actions_core__WEBPACK_IMPORTED_MODULE_0__.warning(
           `Download/install failed: ${err.message}. Falling back to Chocolatey.`,
         );
         try {
-          await execPromise(`choco install innosetup -y`);
+          _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Installing Inno Setup via choco…`);
+          await spawnPromise("choco", ["install", "innosetup", "-y"]);
+          _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Installed.`);
         } catch (err2) {
           throw new Error(
             `Failed to install Inno Setup: ${err2.stderr || err2.message}`,
@@ -27575,7 +27661,9 @@ async function run() {
       }
     } else {
       try {
-        await execPromise(`choco install innosetup -y`);
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Installing Inno Setup via choco…`);
+        await spawnPromise("choco", ["install", "innosetup", "-y"]);
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Installed.`);
       } catch (err) {
         throw new Error(
           `Failed to install Inno Setup: ${err.stderr || err.message}`,
@@ -27592,12 +27680,8 @@ async function run() {
     const scriptPath = path__WEBPACK_IMPORTED_MODULE_6__.join(workspacePath, scriptInput);
 
     try {
-      const { stdout, stderr } = await execFilePromise(isccPath, [
-        scriptPath,
-        ...escapedOptions,
-      ]);
-      if (stdout) console.log(stdout);
-      if (stderr) console.error(stderr);
+      _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Running iscc…`);
+      await spawnPromise(isccPath, [scriptPath, ...escapedOptions]);
     } catch (err) {
       throw new Error(`Execution failed: ${err.stderr || err.message}`);
     }
@@ -27605,7 +27689,6 @@ async function run() {
     console.log("Inno Setup script compiled successfully.");
   } catch (error) {
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(error.message || "An unknown error occurred.");
-    process.exit(1);
   }
 }
 

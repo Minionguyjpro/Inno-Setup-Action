@@ -3,21 +3,39 @@ import { promises as fs } from "fs";
 import { createWriteStream } from "fs";
 import { exec, execFile } from "child_process";
 import { promisify } from "util";
+import { spawn } from "child_process";
 import https from "https";
 import os from "os";
 import pathModule from "path";
-
-const execPromise = promisify(exec);
-const execFilePromise = promisify(execFile);
 
 const workspacePath = process.env.GITHUB_WORKSPACE;
 const options = core.getMultilineInput("options");
 const scriptInput = core.getInput("path");
 const installLatest =
   (core.getInput("install_latest") || "false").toLowerCase() === "true";
-const installerUrl =
-  core.getInput("installer_url") ||
-  "https://jrsoftware.org/download.php/is.exe?site=1";
+const installerUrl = core.getInput("installer_url");
+const latestReleaseApiUrl =
+  "https://api.github.com/repos/jrsoftware/issrc/releases/latest";
+
+function spawnPromise(command, args = [], options = {}) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      shell: false,
+      stdio: "inherit",
+      ...options,
+    });
+
+    child.on("error", reject);
+
+    child.on("close", (code) => {
+      if (code !== 0) {
+        reject(new Error(`${command} exited with code ${code}`));
+      } else {
+        resolve();
+      }
+    });
+  });
+}
 
 async function run() {
   try {
@@ -52,28 +70,88 @@ async function run() {
             return reject(
               new Error("Too many redirects while downloading installer"),
             );
-          https
-            .get(u, (res) => {
-              if (
-                res.statusCode >= 300 &&
-                res.statusCode < 400 &&
-                res.headers.location
-              ) {
-                return getUrl(res.headers.location, redirects + 1);
-              }
-              if (res.statusCode !== 200) {
-                return reject(
-                  new Error(`Download failed with status ${res.statusCode}`),
-                );
-              }
-              const file = createWriteStream(dest);
-              res.pipe(file);
-              file.on("finish", () => file.close(resolve));
-              file.on("error", reject);
-            })
-            .on("error", reject);
+          try {
+            https
+              .get(u, (res) => {
+                if (
+                  res.statusCode >= 300 &&
+                  res.statusCode < 400 &&
+                  res.headers.location
+                ) {
+                  res.resume();
+                  return getUrl(
+                    new URL(res.headers.location, u),
+                    redirects + 1,
+                  );
+                }
+                if (res.statusCode !== 200) {
+                  return reject(
+                    new Error(`Download failed with status ${res.statusCode}`),
+                  );
+                }
+                const file = createWriteStream(dest);
+                res.pipe(file);
+                file.on("finish", () => file.close(resolve));
+                file.on("error", reject);
+              })
+              .on("error", reject);
+          } catch (error) {
+            reject(error);
+          }
         }
         getUrl(url, 0);
+      });
+    }
+
+    async function getLatestInstallerUrl() {
+      return new Promise((resolve, reject) => {
+        const request = https.get(
+          latestReleaseApiUrl,
+          {
+            headers: {
+              Accept: "application/vnd.github+json",
+              "User-Agent": "Inno-Setup-Action",
+              "X-GitHub-Api-Version": "2026-03-10",
+            },
+          },
+          (res) => {
+            let body = "";
+
+            res.setEncoding("utf8");
+            res.on("data", (chunk) => {
+              body += chunk;
+            });
+            res.on("end", () => {
+              if (res.statusCode !== 200) {
+                reject(
+                  new Error(
+                    `Latest release lookup failed with status ${res.statusCode}`,
+                  ),
+                );
+                return;
+              }
+
+              try {
+                const release = JSON.parse(body);
+                const installer = release.assets?.find((asset) =>
+                  /^innosetup-.*-x64\.exe$/i.test(asset.name),
+                );
+
+                if (!installer?.browser_download_url) {
+                  throw new Error(
+                    "Latest release does not contain an x64 installer asset",
+                  );
+                }
+
+                resolve(installer.browser_download_url);
+              } catch (error) {
+                reject(error);
+              }
+            });
+          },
+        );
+
+        request.on("error", reject);
       });
     }
 
@@ -103,7 +181,9 @@ async function run() {
 
       // Fallback to 'where' to see if it's on PATH
       try {
-        const { stdout } = await execPromise("where iscc.exe");
+        const { stdout } = await spawnPromise("where", ["iscc.exe"], {
+          shell: true,
+        });
         const line = stdout.split(/\r?\n/).find(Boolean);
         if (line) return line.trim();
       } catch (e) {
@@ -120,21 +200,27 @@ async function run() {
         `inno-setup-installer-${Date.now()}.exe`,
       );
       try {
-        core.info(`Downloading Inno Setup from ${installerUrl} ...`);
-        await downloadFile(installerUrl, tmpExe);
+        core.info(`Getting Inno Setup URL…`);
+        const resolvedInstallerUrl =
+          installerUrl || (await getLatestInstallerUrl());
+        core.info(`Downloading Inno Setup from ${resolvedInstallerUrl}…`);
+        await downloadFile(resolvedInstallerUrl, tmpExe);
         core.info(`Running installer silently: ${tmpExe}`);
-        await execFilePromise(tmpExe, [
+        await spawnPromise(tmpExe, [
           "/VERYSILENT",
           "/SUPPRESSMSGBOXES",
           "/NORESTART",
           "/SP-",
         ]);
+        core.info(`Done installing`);
       } catch (err) {
         core.warning(
           `Download/install failed: ${err.message}. Falling back to Chocolatey.`,
         );
         try {
-          await execPromise(`choco install innosetup -y`);
+          core.info(`Installing Inno Setup via choco…`);
+          await spawnPromise("choco", ["install", "innosetup", "-y"]);
+          core.info(`Installed.`);
         } catch (err2) {
           throw new Error(
             `Failed to install Inno Setup: ${err2.stderr || err2.message}`,
@@ -143,7 +229,9 @@ async function run() {
       }
     } else {
       try {
-        await execPromise(`choco install innosetup -y`);
+        core.info(`Installing Inno Setup via choco…`);
+        await spawnPromise("choco", ["install", "innosetup", "-y"]);
+        core.info(`Installed.`);
       } catch (err) {
         throw new Error(
           `Failed to install Inno Setup: ${err.stderr || err.message}`,
@@ -160,12 +248,8 @@ async function run() {
     const scriptPath = pathModule.join(workspacePath, scriptInput);
 
     try {
-      const { stdout, stderr } = await execFilePromise(isccPath, [
-        scriptPath,
-        ...escapedOptions,
-      ]);
-      if (stdout) console.log(stdout);
-      if (stderr) console.error(stderr);
+      core.info(`Running iscc…`);
+      await spawnPromise(isccPath, [scriptPath, ...escapedOptions]);
     } catch (err) {
       throw new Error(`Execution failed: ${err.stderr || err.message}`);
     }
@@ -173,7 +257,6 @@ async function run() {
     console.log("Inno Setup script compiled successfully.");
   } catch (error) {
     core.setFailed(error.message || "An unknown error occurred.");
-    process.exit(1);
   }
 }
 
