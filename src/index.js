@@ -70,8 +70,8 @@ async function run() {
             return reject(
               new Error("Too many redirects while downloading installer"),
             );
-          https
-            .get(u, (res) => {
+          try {
+            https.get(u, (res) => {
               if (
                 res.statusCode >= 300 &&
                 res.statusCode < 400 &&
@@ -90,6 +90,9 @@ async function run() {
               file.on("error", reject);
             })
             .on("error", reject);
+          } catch (error) {
+            reject(error);
+          }
         }
         getUrl(url, 0);
       });

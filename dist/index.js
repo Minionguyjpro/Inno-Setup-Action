@@ -27503,7 +27503,8 @@ async function run() {
             return reject(
               new Error("Too many redirects while downloading installer"),
             );
-          https__WEBPACK_IMPORTED_MODULE_4__.get(u, (res) => {
+          try {
+            https__WEBPACK_IMPORTED_MODULE_4__.get(u, (res) => {
               if (
                 res.statusCode >= 300 &&
                 res.statusCode < 400 &&
@@ -27522,6 +27523,9 @@ async function run() {
               file.on("error", reject);
             })
             .on("error", reject);
+          } catch (error) {
+            reject(error);
+          }
         }
         getUrl(url, 0);
       });
