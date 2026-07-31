@@ -1,4 +1,7 @@
 # Inno-Setup-Action
+![GitHub Release](https://img.shields.io/github/v/release/Minionguyjpro/Inno-Setup-Action)
+![GitHub branch check runs](https://img.shields.io/github/check-runs/Minionguyjpro/Inno-Setup-Action/main?nameFilter=test)
+
 GitHub action to compile .iss (Inno Setup Script) files, to build your own application installers through GitHub Actions. This way it is possible to automatically build installers for Windows software against CI/CD.
 ### Example Usage
 Make for example the file ``/.github/workflows/build.yml`` with the following contents:
