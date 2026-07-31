@@ -1,5 +1,5 @@
 # Inno-Setup-Action
-GitHub action to compile .iss (Inno Setup Script) files, to build your own application installers through GitHub Actions.
+GitHub action to compile .iss (Inno Setup Script) files, to build your own application installers through GitHub Actions. This way it is possible to automatically build installers for Windows software against CI/CD.
 ### Example Usage
 Make for example the file ``/.github/workflows/build.yml`` with the following contents:
 ```yml
@@ -18,7 +18,8 @@ jobs:
           path: src/setup.iss
           options: /O+
 ```
-The action will tell you it saved the file somewhere around in ``D:\YOURREPONAME\YOURREPONAME\`` and maybe in another directory (depends on how you've defined the output directory in your .iss script). In this case, ``D:\YOURREPONAME\YOURREPONAME\`` is the root directory of your cloned GitHub repository workspace in the action. Keep this path layout in mind if you need it for other things in your workflow. If you'd choose to save the setup file in the root directory (by example not specifing a custom directory) and calling it setup.exe, it would be at ``D:\YOURREPONAME\YOURREPONAME\setup.exe``.
+The action will report that it saved the installer around in ``D:\YOURREPONAME\YOURREPONAME\`` and possibly in another directory (depending on how the output directory is defined in your .iss script). In this case, ``D:\YOURREPONAME\YOURREPONAME\`` is the root directory of your cloned GitHub repository workspace in the action. Keep this path layout into consideration if you need it for other steps in your workflow. 
+For example, if you'd choose to save the setup file in the root directory (by example not specifying a custom directory) and calling it setup.exe, it would be at ``D:\YOURREPONAME\YOURREPONAME\setup.exe``. If you need to upload artifacts of your installer, then you should therefore use this path or specify the path relative to the workspace directory.
 
 ---
 | **Key Name** | **Required** | **Example**        | **Default Value** | **Description**
