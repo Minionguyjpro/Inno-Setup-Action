@@ -161,12 +161,20 @@ async function run() {
       const pf = process.env["ProgramFiles"];
       if (pf86) {
         candidates.push(pathModule.join(pf86, "Inno Setup 7", "iscc.exe"));
-        candidates.push(pathModule.join(pf86, "Inno Setup 6", "iscc.exe"));
-        candidates.push(pathModule.join(pf86, "Inno Setup", "iscc.exe"));
       }
       if (pf) {
         candidates.push(pathModule.join(pf, "Inno Setup 7", "iscc.exe"));
+      }
+      if (pf86) {
+        candidates.push(pathModule.join(pf86, "Inno Setup 6", "iscc.exe"));
+      }
+      if (pf) {
         candidates.push(pathModule.join(pf, "Inno Setup 6", "iscc.exe"));
+      }
+      if (pf86) {
+        candidates.push(pathModule.join(pf86, "Inno Setup", "iscc.exe"));
+      }
+      if (pf) {
         candidates.push(pathModule.join(pf, "Inno Setup", "iscc.exe"));
       }
 
